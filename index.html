@@ -262,9 +262,6 @@
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-database-compat.js"></script>
 
 <script>
-
-  document.addEventListener('DOMContentLoaded', function() {
-
 // ─── Firebase config ───────────────────────────────────────────────────────
 const firebaseConfig = {
   apiKey: "AIzaSyByqr9GCcjQHTCCbhRN8fs7eTOezU1Ldvc",
@@ -321,7 +318,7 @@ let ignoreNextRemote = false;
 let saveTimer = null;
 
 // ─── Lock ──────────────────────────────────────────────────────────────────
-const LOCK_DATE = new Date(2026, 5, 11); // June 11, 2026
+const LOCK_DATE = new Date(2026, 5, 11);
 
 function isPoolLocked() {
   return new Date() >= LOCK_DATE;
@@ -744,14 +741,14 @@ function renderTournament() {
         </div>
         <div style="display:flex;gap:12px;align-items:center;flex-wrap:wrap">
           <div style="display:flex;gap:4px;align-items:center;background:var(--bg2);padding:4px 8px;border-radius:20px">
-            <button class="kbtn" onclick="incrementGroupWin('${t.name}')" style="background:#4a4a4a;color:white;border:none;font-size:12px;padding:2px 8px">+</button>
-            <span style="min-width:32px;text-align:center;font-weight:bold">${wins}W</span>
             <button class="kbtn" onclick="decrementGroupWin('${t.name}')" style="background:#4a4a4a;color:white;border:none;font-size:12px;padding:2px 8px">-</button>
+            <span style="min-width:32px;text-align:center;font-weight:bold">${wins}W</span>
+            <button class="kbtn" onclick="incrementGroupWin('${t.name}')" style="background:#4a4a4a;color:white;border:none;font-size:12px;padding:2px 8px">+</button>
           </div>
           <div style="display:flex;gap:4px;align-items:center;background:var(--bg2);padding:4px 8px;border-radius:20px">
-            <button class="kbtn" onclick="incrementGroupDraw('${t.name}')" style="background:#4a4a4a;color:white;border:none;font-size:12px;padding:2px 8px">+</button>
-            <span style="min-width:32px;text-align:center;font-weight:bold">${draws}D</span>
             <button class="kbtn" onclick="decrementGroupDraw('${t.name}')" style="background:#4a4a4a;color:white;border:none;font-size:12px;padding:2px 8px">-</button>
+            <span style="min-width:32px;text-align:center;font-weight:bold">${draws}D</span>
+            <button class="kbtn" onclick="incrementGroupDraw('${t.name}')" style="background:#4a4a4a;color:white;border:none;font-size:12px;padding:2px 8px">+</button>
           </div>
           <span style="background:var(--info-bg);color:var(--info-text);padding:4px 12px;border-radius:20px;font-size:12px;font-weight:bold">${groupPoints} pts</span>
         </div>
@@ -821,4 +818,4 @@ function refreshAllViews() {
     if (name === 'leaderboard') renderLeaderboard();
   }
 }
-});
+</script>
