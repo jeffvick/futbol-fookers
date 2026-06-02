@@ -482,7 +482,7 @@ function importState() {
 }
 
 function resetPool() {
-  if (isPoolLocked()) {  // ✅ Correct function name
+  if (isPoolLocked()) {
     const password = prompt('Pool is locked. Enter commissioner password to reset:');
     if (password !== 'fuck') {
       showToast('Unauthorized - reset denied');
@@ -491,14 +491,22 @@ function resetPool() {
   }
   if (!confirm('Reset the entire pool for ALL members? This cannot be undone.')) return;
   const newState = {
-  members: ["andy", "d-cast", "fonzy", "geoff", "helen", "kelby", "lucho", "merman", "simon", "trent", "vick", "weston"],
-  memberOrder: Array.from({length:12},(_,i)=>i),
-  draftOrder: [], pickIndex: 0, rosters: {},
-  countryStages: {},
-  countryWins: {},    // ← ADD THIS
-  countryDraws: {},   // ← ADD THIS
-  draftDone: false, shuffled: false
-};
+    members: ["andy", "d-cast", "fonzy", "geoff", "helen", "kelby", "lucho", "merman", "simon", "trent", "vick", "weston"],
+    memberOrder: Array.from({length:12},(_,i)=>i),
+    draftOrder: [],
+    pickIndex: 0,
+    rosters: {},
+    countryStages: {},
+    countryWins: {},
+    countryDraws: {},
+    draftDone: false,
+    shuffled: false
+  };
+  Object.assign(state, newState);
+  poolRef.set(newState);
+  refreshAllViews();
+  showToast('Pool reset for all members');
+}
 
 // ─── Helpers ───────────────────────────────────────────────────────────────
 function showToast(msg) {
