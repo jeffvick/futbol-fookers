@@ -263,6 +263,8 @@
 
 <script>
 
+  document.addEventListener('DOMContentLoaded', function() {
+
 // ─── Firebase config ───────────────────────────────────────────────────────
 const firebaseConfig = {
   apiKey: "AIzaSyByqr9GCcjQHTCCbhRN8fs7eTOezU1Ldvc",
@@ -819,3 +821,4 @@ function refreshAllViews() {
     if (name === 'leaderboard') renderLeaderboard();
   }
 }
+});
