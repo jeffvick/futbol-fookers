@@ -97,6 +97,26 @@
   font-size: 13px;
   margin: 5px 0;
   flex-wrap: wrap;}
+  .win-btn, .draw-btn {
+  background: #4a4a4a !important;
+  color: white !important;
+  border: none !important;
+  font-size: 13px !important;
+  font-weight: bold !important;
+  padding: 2px 10px !important;
+  min-width: 32px !important;
+  cursor: pointer !important;
+  transition: all 0.1s ease !important;
+}
+
+.win-btn:hover, .draw-btn:hover {
+  background: #6a6a6a !important;
+  transform: scale(1.02) !important;
+}
+
+.win-btn:active, .draw-btn:active {
+  transform: scale(0.98) !important;
+}
   .kbtn{font-size:10px;padding:2px 6px;border:0.5px solid var(--border);border-radius:3px;cursor:pointer;font-family:inherit;transition:all 0.1s}
   .adv-btn{font-size:11px;padding:3px 10px;border:0.5px solid var(--border);border-radius:4px;cursor:pointer;font-family:inherit;background:none;color:var(--text2);transition:all 0.1s}
   .adv-btn:hover{background:var(--bg2)}
@@ -759,7 +779,9 @@ function recordAdvance(name, stage) {
   const idx = state.countryStages[name].indexOf(stage);
   if (idx === -1) state.countryStages[name].push(stage);
   else state.countryStages[name].splice(idx, 1);
-  renderTournament(); renderRosters(); renderLeaderboard();
+  renderTournament(); 
+  renderRosters(); 
+  renderLeaderboard();
   scheduleSave();
 }
 
@@ -801,19 +823,23 @@ function renderTournament() {
       const groupPoints = (wins * 3) + (draws * 1);
       
       html += `<div class="match-team-row">
-        <span style="font-size:18px">${t.flag}</span>
-        <span style="flex:1;font-size:12px">${t.name}</span>
-        <div style="display:flex;gap:4px;align-items:center;background:var(--bg2);padding:2px 6px;border-radius:20px">
-          <button class="kbtn" onclick="decrementGroupWin('${t.name}')" style="background:none;font-size:14px;padding:0 4px">-</button>
-          <span style="min-width:28px;text-align:center;font-weight:bold">${wins}W</span>
-          <button class="kbtn" onclick="incrementGroupWin('${t.name}')" style="background:none;font-size:14px;padding:0 4px">+</button>
+        <div style="display:flex;align-items:center;gap:8px;margin-bottom:6px">
+          <span style="font-size:20px">${t.flag}</span>
+          <span style="font-size:13px;font-weight:500">${t.name}</span>
         </div>
-        <div style="display:flex;gap:4px;align-items:center;background:var(--bg2);padding:2px 6px;border-radius:20px">
-          <button class="kbtn" onclick="decrementGroupDraw('${t.name}')" style="background:none;font-size:14px;padding:0 4px">-</button>
-          <span style="min-width:28px;text-align:center;font-weight:bold">${draws}D</span>
-          <button class="kbtn" onclick="incrementGroupDraw('${t.name}')" style="background:none;font-size:14px;padding:0 4px">+</button>
+        <div style="display:flex;gap:12px;align-items:center;flex-wrap:wrap">
+          <div style="display:flex;gap:4px;align-items:center;background:var(--bg2);padding:4px 8px;border-radius:20px">
+            <button class="kbtn win-btn" onclick="incrementGroupWin('${t.name}')" style="background:#4a4a4a;color:white;border:none;font-size:12px;padding:2px 8px">+</button>
+            <span style="min-width:32px;text-align:center;font-weight:bold;color:var(--text)">${wins}W</span>
+            <button class="kbtn win-btn" onclick="decrementGroupWin('${t.name}')" style="background:#4a4a4a;color:white;border:none;font-size:12px;padding:2px 8px">-</button>
+          </div>
+          <div style="display:flex;gap:4px;align-items:center;background:var(--bg2);padding:4px 8px;border-radius:20px">
+            <button class="kbtn draw-btn" onclick="incrementGroupDraw('${t.name}')" style="background:#4a4a4a;color:white;border:none;font-size:12px;padding:2px 8px">+</button>
+            <span style="min-width:32px;text-align:center;font-weight:bold;color:var(--text)">${draws}D</span>
+            <button class="kbtn draw-btn" onclick="decrementGroupDraw('${t.name}')" style="background:#4a4a4a;color:white;border:none;font-size:12px;padding:2px 8px">-</button>
+          </div>
+          <span style="background:var(--info-bg);color:var(--info-text);padding:4px 12px;border-radius:20px;font-size:12px;font-weight:bold">${groupPoints} pts</span>
         </div>
-        <span style="background:var(--info-bg);color:var(--info-text);padding:2px 8px;border-radius:12px;font-size:11px;font-weight:bold">${groupPoints} pts</span>
       </div>`;
     });
     html += '</div>';
@@ -890,7 +916,7 @@ function showTab(name) {
   if (name === 'leaderboard') renderLeaderboard();
 }
 
-function refreshAllViews() {
+ffunction refreshAllViews() {
   initMembers();
   renderDraft();
   renderRosters();
