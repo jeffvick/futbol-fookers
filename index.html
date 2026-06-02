@@ -285,6 +285,40 @@ let saveTimer = null;
 
 // ─── Firebase sync ─────────────────────────────────────────────────────────
 
+// ─── Tournament Lock (no resets after June 11, 2026) ──────────────────────
+const LOCK_DATE = new Date(2026, 5, 11); // June 11, 2026 00:00:00
+
+function isPoolLocked() {
+  return new Date() >= LOCK_DATE;
+}
+
+function showLockWarning() {
+  if (isPoolLocked()) {
+    showToast('⚠️ Tournament mode active — reset disabled');
+    return true;
+  }
+  return false;
+}
+
+// Override the resetPool function with lock check
+const originalResetPool = resetPool;
+resetPool = function() {
+  if (isPoolLocked()) {
+    showToast('⛔ Cannot reset pool — tournament started on June 11th');
+    return;
+  }
+  originalResetPool();
+};
+
+// Also lock the randomizeOrder if needed
+const originalRandomize = randomizeOrder;
+randomizeOrder = function() {
+  if (isPoolLocked()) {
+    showToast('⛔ Draft order locked — tournament has started');
+    return;
+  }
+  originalRandomize();
+};
 // Listen for changes from any browser — updates everyone in real time
 poolRef.on('value', snapshot => {
   if (ignoreNextRemote) { ignoreNextRemote = false; return; }
@@ -375,6 +409,13 @@ function importState() {
 }
 
 function resetPool() {
+  if (isResetLocked()) {
+    const password = prompt('Pool is locked. Enter commissioner password to reset:');
+    if (password !== 'fuck') {
+      showToast('Unauthorized - reset denied');
+      return;
+    }
+  }
   if (!confirm('Reset the entire pool for ALL members? This cannot be undone.')) return;
   const newState = {
     members: Array.from({length:12},(_,i)=>`Member ${i+1}`),
