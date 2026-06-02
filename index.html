@@ -261,7 +261,7 @@ const COUNTRIES = [
   {name:"Germany",        flag:"🇩🇪", rank:8},
   {name:"Belgium",        flag:"🇧🇪", rank:9},
   {name:"Croatia",        flag:"🇭🇷", rank:10},
-  {name:"Italy",          flag:"🇮🇹", rank:11},
+  {name:"New Zealand",    flag:"🇳🇿", rank:11},
   {name:"USA",            flag:"🇺🇸", rank:12},
   {name:"Mexico",         flag:"🇲🇽", rank:13},
   {name:"Uruguay",        flag:"🇺🇾", rank:14},
@@ -302,17 +302,14 @@ const COUNTRIES = [
   {name:"Cape Verde",     flag:"🇨🇻", rank:48}
 ];
 
-// FIX 2: Group G replaced "New Zealand" (not in COUNTRIES) with "Italy" (rank 11, was unassigned)
 const GROUPS_2026 = {
   'A': ['Mexico',    'South Africa',  'South Korea', 'Czechia'],
   'B': ['Canada',    'Bosnia and Herzegovina', 'Qatar', 'Switzerland'],
   'C': ['Brazil',    'Morocco',       'Haiti',       'Scotland'],
   'D': ['USA',       'Paraguay',      'Australia',   'Turkey'],
-  // FIX 1: "Ivory Coast" → "Côte d'Ivoire" to match COUNTRIES
   'E': ['Germany',   "Côte d'Ivoire", 'Ecuador',     'Curaçao'],
   'F': ['Netherlands','Japan',        'Sweden',      'Tunisia'],
-  // FIX 2: "New Zealand" → "Italy"
-  'G': ['Belgium',   'Egypt',         'Iran',        'Italy'],
+  'G': ['Belgium',   'Egypt',         'Iran',        'New Zealand'],
   'H': ['Spain',     'Cape Verde',    'Saudi Arabia','Uruguay'],
   'I': ['France',    'Senegal',       'Iraq',        'Norway'],
   'J': ['Argentina', 'Algeria',       'Austria',     'Jordan'],
