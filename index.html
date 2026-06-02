@@ -318,12 +318,7 @@ let state = {
 let ignoreNextRemote = false;
 let saveTimer = null;
 
-// ─── Lock ──────────────────────────────────────────────────────────────────
-const LOCK_DATE = new Date(2026, 5, 11);
 
-function isPoolLocked() {
-  return new Date() >= LOCK_DATE;
-}
 
 // ─── Firebase Sync ─────────────────────────────────────────────────────────
 poolRef.on('value', snapshot => {
