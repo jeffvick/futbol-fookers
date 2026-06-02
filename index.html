@@ -343,7 +343,7 @@ function exportState() {
   const code = 'WCPOOL:' + btoa(unescape(encodeURIComponent(JSON.stringify(state))));
   if (navigator.clipboard) {
     navigator.clipboard.writeText(code)
-      .then(() => showToast('Backup code copied to clipboard!'))
+      .then(() => showToast('Backup saved! Paste into a doc for safekeeping'))
       .catch(() => showExportFallback(code));
   } else { showExportFallback(code); }
 }
@@ -376,15 +376,15 @@ function importState() {
 
 function resetPool() {
   if (!confirm('Reset the entire pool for ALL members? This cannot be undone.')) return;
-  state = {
+  const newState = {
     members: Array.from({length:12},(_,i)=>`Member ${i+1}`),
     memberOrder: Array.from({length:12},(_,i)=>i),
     draftOrder: [], pickIndex: 0, rosters: {},
     countryStages: {}, draftDone: false, shuffled: false
   };
-  poolRef.remove();
+  Object.assign(state, newState);
+  poolRef.set(newState);  // Use set() instead of remove()
   refreshAllViews();
-  document.getElementById('order-preview').style.display = 'none';
   showToast('Pool reset for all members');
 }
 
@@ -534,14 +534,15 @@ function renderDraft() {
 
 function makePick(country) {
   if (state.draftDone) return;
+  const allDrafted = Object.values(state.rosters).flat().map(t => t.name);
+  if (allDrafted.includes(country.name)) return;
   const mi = state.draftOrder[state.pickIndex];
   const mn = state.members[mi];
   if (!state.rosters[mn]) state.rosters[mn] = [];
   state.rosters[mn].push(country);
   state.pickIndex++;
   if (state.pickIndex >= 48) state.draftDone = true;
-  renderDraft(); renderRosters();
-  scheduleSave();
+  renderDraft(); renderRosters(); renderLeaderboard(); renderTournament(); scheduleSave();
 }
 
 // ─── Scoring ───────────────────────────────────────────────────────────────
@@ -662,7 +663,7 @@ function showTab(name) {
   document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
   document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
   document.getElementById('tab-'+name).classList.add('active');
-  document.querySelectorAll('.tab').forEach(t => { if (t.textContent.trim().toLowerCase() === name) t.classList.add('active'); });
+  document.querySelectorAll('.tab').forEach(t => { if (t.getAttribute('onclick')?.includes(`'${name}'`)) t.classList.add('active'); });
   if (name === 'rosters') renderRosters();
   if (name === 'tournament') renderTournament();
   if (name === 'leaderboard') renderLeaderboard();
