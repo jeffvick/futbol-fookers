@@ -855,6 +855,15 @@ function renderTournament() {
 
   el.innerHTML = html;
 }
+
+  // Add this temporarily to debug
+function debugRecordAdvance(name, stage) {
+  console.log("Attempting to advance:", name, stage);
+  console.log("Current countryStages:", JSON.parse(JSON.stringify(state.countryStages[name] || [])));
+  console.log("Stage definition:", KNOCKOUT_STAGES.find(s => s.key === stage));
+  console.log("Current count for this stage:", stageCount(stage));
+  recordAdvance(name, stage);
+}
   
 // ─── Leaderboard ──────────────────────────────────────────────────────────────
 function renderLeaderboard() {
