@@ -764,14 +764,14 @@ function renderTournament() {
         + '</div>'
         + '<div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap;padding-left:28px">'
         +   '<div style="display:flex;gap:4px;align-items:center;background:var(--bg2);padding:3px 8px;border-radius:20px">'
-        +     '<button class="kbtn" onclick="decrementGroupWin('' + t.name + '')" style="background:#4a4a4a;color:white;border:none;padding:2px 8px;font-size:12px">-</button>'
+        +     '<button class="kbtn" onclick="decrementGroupWin(\'' + t.name + '\')" style="background:#4a4a4a;color:white;border:none;padding:2px 8px;font-size:12px">-</button>'
         +     '<span style="min-width:32px;text-align:center;font-weight:bold;font-size:12px">' + wins + 'W</span>'
-        +     '<button class="kbtn" onclick="incrementGroupWin('' + t.name + '')" style="background:#4a4a4a;color:white;border:none;padding:2px 8px;font-size:12px">+</button>'
+        +     '<button class="kbtn" onclick="incrementGroupWin(\'' + t.name + '\')" style="background:#4a4a4a;color:white;border:none;padding:2px 8px;font-size:12px">+</button>'
         +   '</div>'
         +   '<div style="display:flex;gap:4px;align-items:center;background:var(--bg2);padding:3px 8px;border-radius:20px">'
-        +     '<button class="kbtn" onclick="decrementGroupDraw('' + t.name + '')" style="background:#4a4a4a;color:white;border:none;padding:2px 8px;font-size:12px">-</button>'
+        +     '<button class="kbtn" onclick="decrementGroupDraw(\'' + t.name + '\')" style="background:#4a4a4a;color:white;border:none;padding:2px 8px;font-size:12px">-</button>'
         +     '<span style="min-width:32px;text-align:center;font-weight:bold;font-size:12px">' + draws + 'D</span>'
-        +     '<button class="kbtn" onclick="incrementGroupDraw('' + t.name + '')" style="background:#4a4a4a;color:white;border:none;padding:2px 8px;font-size:12px">+</button>'
+        +     '<button class="kbtn" onclick="incrementGroupDraw(\'' + t.name + '\')" style="background:#4a4a4a;color:white;border:none;padding:2px 8px;font-size:12px">+</button>'
         +   '</div>'
         +   '<span style="background:var(--info-bg);color:var(--info-text);padding:3px 10px;border-radius:20px;font-size:12px;font-weight:bold">' + groupPoints + ' pts</span>'
         + '</div>'
@@ -811,7 +811,7 @@ function renderTournament() {
       } else if (!prevOk) {
         btnLabel   = 'n/a';
         btnStyle   = 'cursor:not-allowed;opacity:0.4;background:none;color:var(--text3)';
-        onclickVal = 'showToast(' + JSON.stringify(c.name + " hasn’t advanced from the previous round") + ')';
+        onclickVal = 'showToast(' + JSON.stringify(c.name + " hasn't advanced from the previous round") + ')';
       } else if (capFull) {
         btnLabel   = 'full';
         btnStyle   = 'cursor:not-allowed;opacity:0.4;background:none;color:var(--text3)';
@@ -836,7 +836,7 @@ function renderTournament() {
 
   el.innerHTML = html;
 }
-
+  
 // ─── Leaderboard ──────────────────────────────────────────────────────────────
 function renderLeaderboard() {
   const el = document.getElementById('lb-content');
