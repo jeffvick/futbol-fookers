@@ -698,44 +698,51 @@ const KNOCKOUT_STAGES = [
 
 // Count how many teams are currently marked for a given stage
 function stageCount(key) {
-  return COUNTRIES.filter(c => (state.countryStages[c.name] || []).includes(key)).length;
+  let count = 0;
+  for (const country of COUNTRIES) {
+    if (state.countryStages[country.name] && state.countryStages[country.name].includes(key)) {
+      count++;
+    }
+  }
+  return count;
 }
 
 function recordAdvance(name, stage) {
-  const alreadyDone = (state.countryStages[name] || []).includes(stage);
-  const stageDef    = KNOCKOUT_STAGES.find(s => s.key === stage);
-
+  // Initialize if needed
+  if (!state.countryStages[name]) state.countryStages[name] = [];
+  
+  const alreadyDone = state.countryStages[name].includes(stage);
+  const stageDef = KNOCKOUT_STAGES.find(s => s.key === stage);
+  
   if (!alreadyDone) {
-    // Prerequisite: must have advanced in the previous round
-    if (stageDef.prev && !(state.countryStages[name] || []).includes(stageDef.prev)) {
+    // Check prerequisite: must have advanced in the previous round (skip for r32 which has no prev)
+    if (stageDef.prev && !state.countryStages[name].includes(stageDef.prev)) {
       showToast(name + " hasn't advanced from the previous round");
       return;
     }
-    // Cap: cannot exceed max teams for this stage
+    // Check cap: cannot exceed max teams for this stage
     if (stageCount(stage) >= stageDef.cap) {
       showToast('Max ' + stageDef.cap + ' teams allowed in ' + stageDef.label);
       return;
     }
-  }
-
-  if (!state.countryStages[name]) state.countryStages[name] = [];
-  const idx = state.countryStages[name].indexOf(stage);
-  if (idx === -1) {
+    // Add the stage
     state.countryStages[name].push(stage);
   } else {
-    // Removing from a stage: cascade-remove all later stages for this team
-    state.countryStages[name].splice(idx, 1);
+    // Remove the stage and cascade remove later stages
     const stageOrder = KNOCKOUT_STAGES.map(s => s.key);
-    const fromIdx    = stageOrder.indexOf(stage);
-    stageOrder.slice(fromIdx + 1).forEach(laterKey => {
-      if (state.countryStages[name]) {
-        const li = state.countryStages[name].indexOf(laterKey);
-        if (li !== -1) state.countryStages[name].splice(li, 1);
-      }
-    });
+    const fromIdx = stageOrder.indexOf(stage);
+    // Remove this stage and all later stages
+    for (let i = fromIdx; i < stageOrder.length; i++) {
+      const laterStage = stageOrder[i];
+      const idx = state.countryStages[name].indexOf(laterStage);
+      if (idx !== -1) state.countryStages[name].splice(idx, 1);
+    }
   }
-
-  renderTournament(); renderRosters(); renderLeaderboard();
+  
+  // Re-render and save
+  renderTournament();
+  renderRosters();
+  renderLeaderboard();
   scheduleSave();
 }
 
@@ -757,25 +764,25 @@ function renderTournament() {
       const draws       = getGroupDraws(t.name);
       const groupPoints = (wins * 3) + draws;
       html += '<div class="match-team-row">'
-        + '<div style="display:flex;align-items:center;gap:8px;margin-bottom:4px;width:100%">'
-        +   '<span style="font-size:20px">' + t.flag + '</span>'
-        +   '<span style="font-size:13px;font-weight:500;flex:1">' + t.name + '</span>'
-        +   '<span class="mult-badge ' + multClass(t.rank) + '">' + multLabel(t.rank) + '</span>'
-        + '</div>'
-        + '<div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap;padding-left:28px">'
-        +   '<div style="display:flex;gap:4px;align-items:center;background:var(--bg2);padding:3px 8px;border-radius:20px">'
-        +     '<button class="kbtn" onclick="decrementGroupWin(\'' + t.name + '\')" style="background:#4a4a4a;color:white;border:none;padding:2px 8px;font-size:12px">-</button>'
-        +     '<span style="min-width:32px;text-align:center;font-weight:bold;font-size:12px">' + wins + 'W</span>'
-        +     '<button class="kbtn" onclick="incrementGroupWin(\'' + t.name + '\')" style="background:#4a4a4a;color:white;border:none;padding:2px 8px;font-size:12px">+</button>'
-        +   '</div>'
-        +   '<div style="display:flex;gap:4px;align-items:center;background:var(--bg2);padding:3px 8px;border-radius:20px">'
-        +     '<button class="kbtn" onclick="decrementGroupDraw(\'' + t.name + '\')" style="background:#4a4a4a;color:white;border:none;padding:2px 8px;font-size:12px">-</button>'
-        +     '<span style="min-width:32px;text-align:center;font-weight:bold;font-size:12px">' + draws + 'D</span>'
-        +     '<button class="kbtn" onclick="incrementGroupDraw(\'' + t.name + '\')" style="background:#4a4a4a;color:white;border:none;padding:2px 8px;font-size:12px">+</button>'
-        +   '</div>'
-        +   '<span style="background:var(--info-bg);color:var(--info-text);padding:3px 10px;border-radius:20px;font-size:12px;font-weight:bold">' + groupPoints + ' pts</span>'
-        + '</div>'
-        + '</div>';
+  + '<div style="display:flex;align-items:center;gap:8px;margin-bottom:4px;width:100%">'
+  +   '<span style="font-size:20px">' + t.flag + '</span>'
+  +   '<span style="font-size:13px;font-weight:500;flex:1">' + t.name + '</span>'
+  +   '<span class="mult-badge ' + multClass(t.rank) + '">' + multLabel(t.rank) + '</span>'
+  + '</div>'
+  + '<div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap;padding-left:28px">'
+  +   '<div style="display:flex;gap:4px;align-items:center;background:var(--bg2);padding:3px 8px;border-radius:20px">'
+  +     '<button class="kbtn" onclick="decrementGroupWin(&quot;' + t.name + '&quot;)" style="background:#4a4a4a;color:white;border:none;padding:2px 8px;font-size:12px">-</button>'
+  +     '<span style="min-width:32px;text-align:center;font-weight:bold;font-size:12px">' + wins + 'W</span>'
+  +     '<button class="kbtn" onclick="incrementGroupWin(&quot;' + t.name + '&quot;)" style="background:#4a4a4a;color:white;border:none;padding:2px 8px;font-size:12px">+</button>'
+  +   '</div>'
+  +   '<div style="display:flex;gap:4px;align-items:center;background:var(--bg2);padding:3px 8px;border-radius:20px">'
+  +     '<button class="kbtn" onclick="decrementGroupDraw(&quot;' + t.name + '&quot;)" style="background:#4a4a4a;color:white;border:none;padding:2px 8px;font-size:12px">-</button>'
+  +     '<span style="min-width:32px;text-align:center;font-weight:bold;font-size:12px">' + draws + 'D</span>'
+  +     '<button class="kbtn" onclick="incrementGroupDraw(&quot;' + t.name + '&quot;)" style="background:#4a4a4a;color:white;border:none;padding:2px 8px;font-size:12px">+</button>'
+  +   '</div>'
+  +   '<span style="background:var(--info-bg);color:var(--info-text);padding:3px 10px;border-radius:20px;font-size:12px;font-weight:bold">' + groupPoints + ' pts</span>'
+  + '</div>'
+  + '</div>';
     });
     html += '</div>';
   }
