@@ -772,82 +772,79 @@ function renderTournament() {
     teams.forEach(teamName => {
       const t = COUNTRIES.find(c => c.name === teamName);
       if (!t) return;
-      const wins        = getGroupWins(t.name);
-      const draws       = getGroupDraws(t.name);
+      const wins = getGroupWins(t.name);
+      const draws = getGroupDraws(t.name);
       const groupPoints = (wins * 3) + draws;
       html += '<div class="match-team-row">'
-  + '<div style="display:flex;align-items:center;gap:8px;margin-bottom:4px;width:100%">'
-  +   '<span style="font-size:20px">' + t.flag + '</span>'
-  +   '<span style="font-size:13px;font-weight:500;flex:1">' + t.name + '</span>'
-  +   '<span class="mult-badge ' + multClass(t.rank) + '">' + multLabel(t.rank) + '</span>'
-  + '</div>'
-  + '<div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap;padding-left:28px">'
-  +   '<div style="display:flex;gap:4px;align-items:center;background:var(--bg2);padding:3px 8px;border-radius:20px">'
-  +     '<button class="kbtn" onclick="decrementGroupWin(&quot;' + t.name + '&quot;)" style="background:#4a4a4a;color:white;border:none;padding:2px 8px;font-size:12px">-</button>'
-  +     '<span style="min-width:32px;text-align:center;font-weight:bold;font-size:12px">' + wins + 'W</span>'
-  +     '<button class="kbtn" onclick="incrementGroupWin(&quot;' + t.name + '&quot;)" style="background:#4a4a4a;color:white;border:none;padding:2px 8px;font-size:12px">+</button>'
-  +   '</div>'
-  +   '<div style="display:flex;gap:4px;align-items:center;background:var(--bg2);padding:3px 8px;border-radius:20px">'
-  +     '<button class="kbtn" onclick="decrementGroupDraw(&quot;' + t.name + '&quot;)" style="background:#4a4a4a;color:white;border:none;padding:2px 8px;font-size:12px">-</button>'
-  +     '<span style="min-width:32px;text-align:center;font-weight:bold;font-size:12px">' + draws + 'D</span>'
-  +     '<button class="kbtn" onclick="incrementGroupDraw(&quot;' + t.name + '&quot;)" style="background:#4a4a4a;color:white;border:none;padding:2px 8px;font-size:12px">+</button>'
-  +   '</div>'
-  +   '<span style="background:var(--info-bg);color:var(--info-text);padding:3px 10px;border-radius:20px;font-size:12px;font-weight:bold">' + groupPoints + ' pts</span>'
-  + '</div>'
-  + '</div>';
+        + '<div style="display:flex;align-items:center;gap:8px;margin-bottom:4px;width:100%">'
+        + '<span style="font-size:20px">' + t.flag + '</span>'
+        + '<span style="font-size:13px;font-weight:500;flex:1">' + t.name + '</span>'
+        + '<span class="mult-badge ' + multClass(t.rank) + '">' + multLabel(t.rank) + '</span>'
+        + '</div>'
+        + '<div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap;padding-left:28px">'
+        + '<div style="display:flex;gap:4px;align-items:center;background:var(--bg2);padding:3px 8px;border-radius:20px">'
+        + '<button class="kbtn" onclick="decrementGroupWin(\'' + t.name.replace(/'/g, "\\'") + '\')" style="background:#4a4a4a;color:white;border:none;padding:2px 8px;font-size:12px">-</button>'
+        + '<span style="min-width:32px;text-align:center;font-weight:bold;font-size:12px">' + wins + 'W</span>'
+        + '<button class="kbtn" onclick="incrementGroupWin(\'' + t.name.replace(/'/g, "\\'") + '\')" style="background:#4a4a4a;color:white;border:none;padding:2px 8px;font-size:12px">+</button>'
+        + '</div>'
+        + '<div style="display:flex;gap:4px;align-items:center;background:var(--bg2);padding:3px 8px;border-radius:20px">'
+        + '<button class="kbtn" onclick="decrementGroupDraw(\'' + t.name.replace(/'/g, "\\'") + '\')" style="background:#4a4a4a;color:white;border:none;padding:2px 8px;font-size:12px">-</button>'
+        + '<span style="min-width:32px;text-align:center;font-weight:bold;font-size:12px">' + draws + 'D</span>'
+        + '<button class="kbtn" onclick="incrementGroupDraw(\'' + t.name.replace(/'/g, "\\'") + '\')" style="background:#4a4a4a;color:white;border:none;padding:2px 8px;font-size:12px">+</button>'
+        + '</div>'
+        + '<span style="background:var(--info-bg);color:var(--info-text);padding:3px 10px;border-radius:20px;font-size:12px;font-weight:bold">' + groupPoints + ' pts</span>'
+        + '</div>'
+        + '</div>';
     });
     html += '</div>';
   }
   html += '</div>';
 
   KNOCKOUT_STAGES.forEach(function(stageDef) {
-    const key      = stageDef.key;
-    const label    = stageDef.label;
-    const cap      = stageDef.cap;
-    const prev     = stageDef.prev;
+    const key = stageDef.key;
+    const label = stageDef.label;
+    const cap = stageDef.cap;
+    const prev = stageDef.prev;
     const selected = stageCount(key);
-    const capFull  = selected >= cap;
+    const capFull = selected >= cap;
 
     html += '<div class="round-label" style="display:flex;align-items:center;gap:8px">'
-          +   '<span>' + label + '</span>'
-          +   '<span style="font-size:11px;padding:2px 8px;border-radius:10px;font-weight:500;background:'
-          +     (capFull ? 'var(--success-bg)' : 'var(--bg2)') + ';color:'
-          +     (capFull ? 'var(--success-text)' : 'var(--text3)') + '">' + selected + '/' + cap + '</span>'
-          + '</div>'
-          + '<div class="matches-grid">';
+      + '<span>' + label + '</span>'
+      + '<span style="font-size:11px;padding:2px 8px;border-radius:10px;font-weight:500;background:'
+      + (capFull ? 'var(--success-bg)' : 'var(--bg2)') + ';color:'
+      + (capFull ? 'var(--success-text)' : 'var(--text3)') + '">' + selected + '/' + cap + '</span>'
+      + '</div>'
+      + '<div class="matches-grid">';
 
     COUNTRIES.forEach(function(c) {
-      const done     = (state.countryStages[c.name] || []).includes(key);
-      const prevOk   = !prev || (state.countryStages[c.name] || []).includes(prev);
-      const canClick = done || (prevOk && !capFull);
-      const dimmed   = !canClick;
+      const done = (state.countryStages[c.name] || []).includes(key);
+      const prevOk = !prev || (state.countryStages[c.name] || []).includes(prev);
 
-      var btnLabel, btnStyle, onclickVal;
+      let btnLabel, btnStyle, onclickVal;
       if (done) {
-        btnLabel   = '✓ done';
-        btnStyle   = 'background:var(--success-bg);color:var(--success-text);border-color:var(--success-border)';
-        onclickVal = 'recordAdvance(' + JSON.stringify(c.name) + ',' + JSON.stringify(key) + ')';
+        btnLabel = '✓ done';
+        btnStyle = 'background:var(--success-bg);color:var(--success-text);border-color:var(--success-border)';
+        onclickVal = 'recordAdvance(\'' + c.name.replace(/'/g, "\\'") + '\', \'' + key + '\')';
       } else if (!prevOk) {
-        btnLabel   = 'n/a';
-        btnStyle   = 'cursor:not-allowed;opacity:0.4;background:none;color:var(--text3)';
-        onclickVal = 'showToast(' + JSON.stringify(c.name + " hasn't advanced from the previous round") + ')';
+        btnLabel = 'n/a';
+        btnStyle = 'cursor:not-allowed;opacity:0.4;background:none;color:var(--text3)';
+        onclickVal = 'showToast(\'' + c.name.replace(/'/g, "\\'") + ' hasn\\\'t advanced from the previous round\')';
       } else if (capFull) {
-        btnLabel   = 'full';
-        btnStyle   = 'cursor:not-allowed;opacity:0.4;background:none;color:var(--text3)';
-        onclickVal = 'showToast(' + JSON.stringify('Max ' + cap + ' teams for ' + label) + ')';
+        btnLabel = 'full';
+        btnStyle = 'cursor:not-allowed;opacity:0.4;background:none;color:var(--text3)';
+        onclickVal = 'showToast(\'Max ' + cap + ' teams for ' + label + '\')';
       } else {
-        btnLabel   = 'record';
-        btnStyle   = '';
-        onclickVal = 'recordAdvance(' + JSON.stringify(c.name) + ',' + JSON.stringify(key) + ')';
+        btnLabel = 'record';
+        btnStyle = '';
+        onclickVal = 'recordAdvance(\'' + c.name.replace(/'/g, "\\'") + '\', \'' + key + '\')';
       }
 
-      html += '<div class="match-card" style="display:flex;align-items:center;gap:8px;padding:8px 12px;'
-            +   (dimmed ? 'opacity:0.45' : '') + '">'
-            +   '<span style="font-size:18px">' + c.flag + '</span>'
-            +   '<span style="flex:1;font-size:12px">' + c.name + '</span>'
-            +   '<span class="mult-badge ' + multClass(c.rank) + '">' + multLabel(c.rank) + '</span>'
-            +   '<button class="adv-btn ' + (done ? 'done' : '') + '" style="' + btnStyle + '" onclick="' + onclickVal + '">' + btnLabel + '</button>'
-            + '</div>';
+      html += '<div class="match-card" style="display:flex;align-items:center;gap:8px;padding:8px 12px;">'
+        + '<span style="font-size:18px">' + c.flag + '</span>'
+        + '<span style="flex:1;font-size:12px">' + c.name + '</span>'
+        + '<span class="mult-badge ' + multClass(c.rank) + '">' + multLabel(c.rank) + '</span>'
+        + '<button class="adv-btn ' + (done ? 'done' : '') + '" style="' + btnStyle + '" onclick="' + onclickVal + '">' + btnLabel + '</button>'
+        + '</div>';
     });
 
     html += '</div>';
