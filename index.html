@@ -531,19 +531,6 @@ function readMemberInputs() {
   });
 }
 
-
-function renderOrderPreview() {
-  document.getElementById('order-preview').style.display = 'block';
-  const chips = document.getElementById('order-chips');
-  chips.innerHTML = '';
-  state.memberOrder.forEach((mi, pos) => {
-    const div = document.createElement('div');
-    div.className = 'order-chip';
-    div.innerHTML = `<span style="font-size:10px;color:var(--text3);width:28px">#${pos + 1}</span><span style="width:8px;height:8px;border-radius:50%;background:${COLORS[mi]};display:inline-block"></span><span style="margin-left:4px">${state.members[mi]}</span>`;
-    chips.appendChild(div);
-  });
-}
-
 function buildSnakeOrder() {
   const order = [];
   for (let r = 0; r < 4; r++) {
@@ -1001,7 +988,6 @@ function refreshAllViews() {
   initMembers();
   renderDraft();
   renderRosters();
-  if (state.shuffled) renderOrderPreview();
   const active = document.querySelector('.section.active');
   if (active) {
     const name = active.id.replace('tab-', '');
