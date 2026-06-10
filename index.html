@@ -204,6 +204,26 @@ firebase.initializeApp(firebaseConfig);
 const db = firebase.database();
 const poolRef = db.ref('pool');
 
+// Add this right after firebase.initializeApp(firebaseConfig);
+firebase.database().ref('.info/connected').on('value', (snap) => {
+  if (snap.val() === true) {
+    console.log("Connected to Firebase");
+    document.getElementById('loading-overlay').classList.add('hidden');
+  } else {
+    console.log("Not connected to Firebase");
+    setSyncStatus('err', 'Connection failed - check console');
+  }
+});
+
+// Add this for debugging
+firebase.database().ref('pool').on('value', (snapshot) => {
+  console.log("Database snapshot received:", snapshot.exists());
+}, (error) => {
+  console.error("Firebase error:", error);
+  setSyncStatus('err', 'Database error: ' + error.message);
+  document.getElementById('loading-overlay').classList.remove('hidden');
+});
+
 // ─── MASTER COUNTRY LIST (48 nations, full FIFA rank) ───────────────────────
 const COUNTRIES = [
   {name:"Spain", flag:"🇪🇸", rank:2}, {name:"France", flag:"🇫🇷", rank:1}, {name:"Netherlands", flag:"🇳🇱", rank:7},
