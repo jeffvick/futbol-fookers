@@ -68,23 +68,6 @@
   .stat-box .slabel{font-size:11px;color:var(--text3);text-transform:uppercase;letter-spacing:0.05em}
   .stat-box .sval{font-size:22px;font-weight:500;margin-top:2px}
   .done-banner{background:var(--success-bg);border:0.5px solid var(--success-border);color:var(--success-text);border-radius:var(--radius);padding:10px 16px;font-size:13px;font-weight:500;margin-bottom:12px;display:none}
-  .draft-order-list{background:var(--bg2);border-radius:var(--radius);padding:8px;margin-top:4px}
-  .draft-order-item{display:flex;align-items:center;gap:12px;padding:10px 12px;margin:4px 0;background:var(--bg);border:0.5px solid var(--border);border-radius:var(--radius);cursor:grab;transition:all 0.1s}
-  .draft-order-item:active{cursor:grabbing}
-  .draft-order-item.dragging{opacity:0.3;cursor:grabbing}
-  .draft-order-handle{cursor:grab;color:var(--text3);font-size:16px;user-select:none}
-  .draft-order-number{width:32px;font-size:13px;font-weight:600;color:var(--text2)}
-  .draft-order-name{flex:1;font-size:13px}
-  .draft-order-color{width:10px;height:10px;border-radius:50%}
-  .current-pick{background:var(--info-bg);border:1.5px solid var(--info-border);border-radius:var(--radius);padding:12px 16px;margin-bottom:12px;display:flex;align-items:center;gap:14px}
-  .draft-body{display:grid;grid-template-columns:220px 1fr;gap:1rem}
-  @media(max-width:600px){.draft-body{grid-template-columns:1fr}}
-  .queue-list{display:flex;flex-direction:column;gap:4px;max-height:380px;overflow-y:auto}
-  .q-item{display:flex;align-items:center;padding:6px 10px;border-radius:var(--radius);font-size:13px;border:0.5px solid transparent}
-  .countries-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(105px,1fr));gap:6px;max-height:440px;overflow-y:auto}
-  .country-card{border:0.5px solid var(--border);border-radius:var(--radius);padding:8px;cursor:pointer;transition:all 0.12s;background:var(--bg)}
-  .country-card:hover{border-color:var(--border2);background:var(--bg2)}
-  .country-card.drafted{opacity:0.3;cursor:default;pointer-events:none}
   .rosters-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:10px}
   .roster-card{background:var(--bg);border:0.5px solid var(--border);border-radius:var(--radius-lg);padding:12px}
   .roster-team{display:flex;align-items:center;gap:6px;padding:4px 0;font-size:12px;border-bottom:0.5px solid var(--border)}
@@ -109,6 +92,7 @@
   .loading-overlay.hidden{opacity:0;pointer-events:none}
   .spinner{width:32px;height:32px;border:2.5px solid var(--border);border-top-color:var(--text2);border-radius:50%;animation:spin 0.7s linear infinite}
   @keyframes spin{to{transform:rotate(360deg)}}
+  .info-note{background:var(--info-bg);border:1px solid var(--info-border);border-radius:var(--radius);padding:10px 14px;margin-bottom:16px;font-size:12px;color:var(--info-text)}
 </style>
 </head>
 <body>
@@ -124,7 +108,7 @@
 
   <div class="header">
     <h1>FIFA World Cup<br>⚽ Pool Party ⚽</h1>
-    <p>Snake draft · 48 countries · 12 fuckers · weighted underdawg scoring</p>
+    <p>Pre‑assigned rosters · 48 countries · 12 fuckers · weighted underdog scoring</p>
   </div>
 
   <div class="sync-bar">
@@ -150,93 +134,54 @@
   </div>
 
   <div class="tabs">
-    <button class="tab active" onclick="showTab('setup')">Setup</button>
-    <button class="tab" onclick="showTab('draft')">Draft</button>
-    <button class="tab" onclick="showTab('rosters')">Rosters</button>
+    <button class="tab active" onclick="showTab('rosters')">Rosters</button>
     <button class="tab" onclick="showTab('tournament')">Tournament</button>
     <button class="tab" onclick="showTab('leaderboard')">Leaderboard</button>
+    <button class="tab" onclick="showTab('setup')">Settings</button>
   </div>
 
-  <!-- SETUP -->
-  <div id="tab-setup" class="section active">
-    <div class="setup-grid">
-      <div class="card">
-  <div class="card-title">12 pool members</div>
-  <div class="member-list" id="member-list"></div>
-  
-  <div style="margin-top: 16px; margin-bottom: 12px;">
-    <div class="card-title">Draft Order (drag to reorder)</div>
-    <div id="draft-order-list" class="draft-order-list"></div>
-    <p style="font-size: 11px; color: var(--text3); margin-top: 8px;">↓ Drag and drop to set the draft order. Round 1 pick #1 is at the top.</p>
-  </div>
-  
-  <button class="btn-primary" onclick="startDraft()">Start Draft →</button>
-</div>
-      <div>
-        <div class="card" style="margin-bottom:10px">
-          <div class="card-title">Scoring system</div>
-          <div class="scoring-row"><span class="stage">Group stage win</span><div class="pts-row"><span>3 pts</span></div></div>
-          <div class="scoring-row"><span class="stage">Group stage draw</span><div class="pts-row"><span>1 pt</span></div></div>
-          <div class="scoring-row"><span class="stage">Round of 32</span><div class="pts-row"><span>4 pts</span><span class="tag tag-warn">+ mult</span></div></div>
-          <div class="scoring-row"><span class="stage">Round of 16</span><div class="pts-row"><span>6 pts</span><span class="tag tag-warn">+ mult</span></div></div>
-          <div class="scoring-row"><span class="stage">Quarter-final</span><div class="pts-row"><span>8 pts</span><span class="tag tag-warn">+ mult</span></div></div>
-          <div class="scoring-row"><span class="stage">Semi-final</span><div class="pts-row"><span>12 pts</span><span class="tag tag-warn">+ mult</span></div></div>
-          <div class="scoring-row"><span class="stage">Runner-up</span><div class="pts-row"><span>16 pts</span><span class="tag tag-warn">+ mult</span></div></div>
-          <div class="scoring-row"><span class="stage">Champion</span><div class="pts-row"><span>25 pts</span><span class="tag tag-warn">+ mult</span></div></div>
-        </div>
-        <div class="card">
-          <div class="card-title">Underdog multipliers</div>
-          <div class="scoring-row"><span class="stage">Rank 1–10 (elite)</span><span class="mult-badge m1">×1</span></div>
-          <div class="scoring-row"><span class="stage">Rank 11–20</span><span class="mult-badge m2">×1.25</span></div>
-          <div class="scoring-row"><span class="stage">Rank 21–35</span><span class="mult-badge m3">×1.5</span></div>
-          <div class="scoring-row"><span class="stage">Rank 36–48</span><span class="mult-badge m4">×2.0</span></div>
-          <div class="scoring-row"><span class="stage">Champion upset bonus</span><span class="mult-badge m5">rank × 0.1</span></div>
-        </div>
-      </div>
+  <!-- ROSTERS (main tab) -->
+  <div id="tab-rosters" class="section active">
+    <div class="info-note">
+      ⚡ Rosters pre‑assigned per your list. No draft needed — track group & knockout results below.
     </div>
-  </div>
-
-  <!-- DRAFT -->
-  <div id="tab-draft" class="section">
-    <div class="draft-stats">
-      <div class="stat-box"><div class="slabel">Pick</div><div class="sval" id="d-pick">—</div></div>
-      <div class="stat-box"><div class="slabel">Round</div><div class="sval" id="d-round">—</div></div>
-      <div class="stat-box"><div class="slabel">Remaining</div><div class="sval" id="d-remaining">48</div></div>
-    </div>
-    <div id="done-banner" class="done-banner">✓ Draft complete — head to Rosters or Tournament to play!</div>
-    <div class="current-pick">
-      <div id="cp-num" style="font-size:28px;font-weight:500;color:var(--info-text);flex-shrink:0">—</div>
-      <div>
-        <div id="cp-name" style="font-size:15px;font-weight:500">Connecting to pool...</div>
-        <div id="cp-sub" style="font-size:12px;color:var(--text2);margin-top:2px">Please wait</div>
-      </div>
-    </div>
-    <div class="draft-body">
-      <div class="card" style="padding:1rem">
-        <div class="card-title">Upcoming picks</div>
-        <div class="queue-list" id="draft-queue"></div>
-      </div>
-      <div>
-        <div style="font-size:13px;color:var(--text2);margin-bottom:8px">Click a country to draft it for the current pick</div>
-        <div class="countries-grid" id="countries-grid"></div>
-      </div>
-    </div>
-  </div>
-
-  <!-- ROSTERS -->
-  <div id="tab-rosters" class="section">
     <div class="rosters-grid" id="rosters-grid"></div>
   </div>
 
   <!-- TOURNAMENT -->
   <div id="tab-tournament" class="section">
-    <div style="font-size:13px;color:var(--text2);margin-bottom:1rem">Click buttons to toggle results. Changes sync live for all members.</div>
+    <div class="info-note">
+      🏆 Track wins/draws and knockout advances. Scores update automatically using multipliers.
+    </div>
     <div id="tournament-content"></div>
   </div>
 
   <!-- LEADERBOARD -->
   <div id="tab-leaderboard" class="section">
     <div id="lb-content"></div>
+  </div>
+
+  <!-- SETUP (minimal, no draft controls) -->
+  <div id="tab-setup" class="section">
+    <div class="setup-grid">
+      <div class="card">
+        <div class="card-title">Pool members</div>
+        <div class="member-list" id="member-list"></div>
+        <button class="btn-primary" onclick="updateMembersFromSetup()">Save member names</button>
+        <p style="font-size:11px;margin-top:12px;color:var(--text3)">Draft is disabled — rosters are fixed per commissioner assignment.</p>
+      </div>
+      <div class="card">
+        <div class="card-title">Scoring system</div>
+        <div class="scoring-row"><span class="stage">Group stage win</span><div class="pts-row"><span>3 pts</span></div></div>
+        <div class="scoring-row"><span class="stage">Group stage draw</span><div class="pts-row"><span>1 pt</span></div></div>
+        <div class="scoring-row"><span class="stage">Round of 32</span><div class="pts-row"><span>4 pts</span><span class="tag tag-warn">+ mult</span></div></div>
+        <div class="scoring-row"><span class="stage">Round of 16</span><div class="pts-row"><span>6 pts</span><span class="tag tag-warn">+ mult</span></div></div>
+        <div class="scoring-row"><span class="stage">Quarter-final</span><div class="pts-row"><span>8 pts</span><span class="tag tag-warn">+ mult</span></div></div>
+        <div class="scoring-row"><span class="stage">Semi-final</span><div class="pts-row"><span>12 pts</span><span class="tag tag-warn">+ mult</span></div></div>
+        <div class="scoring-row"><span class="stage">Runner-up</span><div class="pts-row"><span>16 pts</span><span class="tag tag-warn">+ mult</span></div></div>
+        <div class="scoring-row"><span class="stage">Champion</span><div class="pts-row"><span>25 pts</span><span class="tag tag-warn">+ mult</span></div></div>
+      </div>
+    </div>
   </div>
 </div>
 
@@ -259,490 +204,60 @@ firebase.initializeApp(firebaseConfig);
 const db = firebase.database();
 const poolRef = db.ref('pool');
 
-// ─── Static data ─────────────────────────────────────────────────────────────
+// ─── MASTER COUNTRY LIST (48 nations, full FIFA rank) ───────────────────────
 const COUNTRIES = [
-  {name:"Spain",          flag:"🇪🇸", rank:1},
-  {name:"Argentina",      flag:"🇦🇷", rank:2},
-  {name:"France",         flag:"🇫🇷", rank:3},
-  {name:"England",        flag:"🏴󠁧󠁢󠁥󠁮󠁧󠁿", rank:4},
-  {name:"Brazil",         flag:"🇧🇷", rank:5},
-  {name:"Portugal",       flag:"🇵🇹", rank:6},
-  {name:"Netherlands",    flag:"🇳🇱", rank:7},
-  {name:"Belgium",        flag:"🇧🇪", rank:8},
-  {name:"Germany",        flag:"🇩🇪", rank:9},
-  {name:"Croatia",        flag:"🇭🇷", rank:10},
-  {name:"Morocco",        flag:"🇲🇦", rank:11},
-  {name:"Colombia",       flag:"🇨🇴", rank:13},
-  {name:"USA",            flag:"🇺🇸", rank:14},
-  {name:"Mexico",         flag:"🇲🇽", rank:15},
-  {name:"Uruguay",        flag:"🇺🇾", rank:16},
-  {name:"Switzerland",    flag:"🇨🇭", rank:17},
-  {name:"Japan",          flag:"🇯🇵", rank:18},
-  {name:"Senegal",        flag:"🇸🇳", rank:19},
-  {name:"Iran",           flag:"🇮🇷", rank:20},
-  {name:"South Korea",    flag:"🇰🇷", rank:22},
-  {name:"Ecuador",        flag:"🇪🇨", rank:23},
-  {name:"Austria",        flag:"🇦🇹", rank:24},
-  {name:"Australia",      flag:"🇦🇺", rank:26},
-  {name:"Canada",         flag:"🇨🇦", rank:27},
-  {name:"Norway",         flag:"🇳🇴", rank:29},
-  {name:"Panama",         flag:"🇵🇦", rank:30},
-  {name:"Egypt",          flag:"🇪🇬", rank:34},
-  {name:"Algeria",        flag:"🇩🇿", rank:35},
-  {name:"Scotland",       flag:"🏴󠁧󠁢󠁳󠁣󠁴󠁿", rank:36},
-  {name:"Paraguay",       flag:"🇵🇾", rank:39},
-  {name:"Tunisia",        flag:"🇹🇳", rank:40},
-  {name:"Côte d'Ivoire",  flag:"🇨🇮", rank:42},
-  {name:"Uzbekistan",     flag:"🇺🇿", rank:50},
-  {name:"Qatar",          flag:"🇶🇦", rank:51},
-  {name:"Saudi Arabia",   flag:"🇸🇦", rank:60},
-  {name:"South Africa",   flag:"🇿🇦", rank:61},
-  {name:"Jordan",         flag:"🇯🇴", rank:66},
-  {name:"Cape Verde",     flag:"🇨🇻", rank:68},
-  {name:"Ghana",          flag:"🇬🇭", rank:72},
-  {name:"Curaçao",        flag:"🇨🇼", rank:82},
-  {name:"Haiti",          flag:"🇭🇹", rank:84},
-  {name:"New Zealand",    flag:"🇳🇿", rank:86}  // Fixed!
+  {name:"Spain", flag:"🇪🇸", rank:2}, {name:"France", flag:"🇫🇷", rank:1}, {name:"Netherlands", flag:"🇳🇱", rank:7},
+  {name:"Germany", flag:"🇩🇪", rank:10}, {name:"England", flag:"🏴󠁧󠁢󠁥󠁮󠁧󠁿", rank:4}, {name:"Portugal", flag:"🇵🇹", rank:5},
+  {name:"Brazil", flag:"🇧🇷", rank:6}, {name:"Morocco", flag:"🇲🇦", rank:8}, {name:"Argentina", flag:"🇦🇷", rank:3},
+  {name:"USA", flag:"🇺🇸", rank:16}, {name:"Belgium", flag:"🇧🇪", rank:9}, {name:"Australia", flag:"🇦🇺", rank:27},
+  {name:"Mexico", flag:"🇲🇽", rank:15}, {name:"Norway", flag:"🇳🇴", rank:32}, {name:"Croatia", flag:"🇭🇷", rank:11},
+  {name:"Colombia", flag:"🇨🇴", rank:13}, {name:"Switzerland", flag:"🇨🇭", rank:19}, {name:"Uruguay", flag:"🇺🇾", rank:17},
+  {name:"Japan", flag:"🇯🇵", rank:18}, {name:"Senegal", flag:"🇸🇳", rank:14}, {name:"South Korea", flag:"🇰🇷", rank:25},
+  {name:"Canada", flag:"🇨🇦", rank:30}, {name:"Ecuador", flag:"🇪🇨", rank:24}, {name:"Türkiye", flag:"🇹🇷", rank:15},
+  {name:"Ivory Coast", flag:"🇨🇮", rank:34}, {name:"Egypt", flag:"🇪🇬", rank:29}, {name:"Austria", flag:"🇦🇹", rank:24},
+  {name:"Iran", flag:"🇮🇷", rank:21}, {name:"Sweden", flag:"🇸🇪", rank:28}, {name:"Czechia", flag:"🇨🇿", rank:36},
+  {name:"Algeria", flag:"🇩🇿", rank:28}, {name:"Saudi Arabia", flag:"🇸🇦", rank:61}, {name:"Scotland", flag:"🏴󠁧󠁢󠁳󠁣󠁴󠁿", rank:43},
+  {name:"Paraguay", flag:"🇵🇾", rank:40}, {name:"Bosnia and Herzegovina", flag:"🇧🇦", rank:74}, {name:"Panama", flag:"🇵🇦", rank:46},
+  {name:"South Africa", flag:"🇿🇦", rank:61}, {name:"Tunisia", flag:"🇹🇳", rank:44}, {name:"New Zealand", flag:"🇳🇿", rank:85},
+  {name:"Ghana", flag:"🇬🇭", rank:74}, {name:"Qatar", flag:"🇶🇦", rank:55}, {name:"Jordan", flag:"🇯🇴", rank:63},
+  {name:"Haiti", flag:"🇭🇹", rank:83}, {name:"Uzbekistan", flag:"🇺🇿", rank:54}, {name:"DR Congo", flag:"🇨🇩", rank:59},
+  {name:"Iraq", flag:"🇮🇶", rank:62}, {name:"Cape Verde", flag:"🇨🇻", rank:68}, {name:"Curaçao", flag:"🇨🇼", rank:82}
 ];
 
 const GROUPS_2026 = {
-  'A': ['Mexico',    'South Africa',  'South Korea', 'Czechia'],
-  'B': ['Canada',    'Bosnia and Herzegovina', 'Qatar', 'Switzerland'],
-  'C': ['Brazil',    'Morocco',       'Haiti',       'Scotland'],
-  'D': ['USA',       'Paraguay',      'Australia',   'Turkey'],
-  'E': ['Germany',   "Côte d'Ivoire", 'Ecuador',     'Curaçao'],
-  'F': ['Netherlands','Japan',        'Sweden',      'Tunisia'],
-  'G': ['Belgium',   'Egypt',         'Iran',        'New Zealand'],
-  'H': ['Spain',     'Cape Verde',    'Saudi Arabia','Uruguay'],
-  'I': ['France',    'Senegal',       'Iraq',        'Norway'],
-  'J': ['Argentina', 'Algeria',       'Austria',     'Jordan'],
-  'K': ['Portugal',  'DR Congo',      'Uzbekistan',  'Colombia'],
-  'L': ['England',   'Croatia',       'Ghana',       'Panama']
+  'A': ['Mexico', 'South Africa', 'South Korea', 'Czechia'],
+  'B': ['Canada', 'Bosnia and Herzegovina', 'Qatar', 'Switzerland'],
+  'C': ['Brazil', 'Morocco', 'Haiti', 'Scotland'],
+  'D': ['USA', 'Paraguay', 'Australia', 'Türkiye'],
+  'E': ['Germany', "Ivory Coast", 'Ecuador', 'Curaçao'],
+  'F': ['Netherlands','Japan', 'Sweden', 'Tunisia'],
+  'G': ['Belgium', 'Egypt', 'Iran', 'New Zealand'],
+  'H': ['Spain', 'Cape Verde', 'Saudi Arabia','Uruguay'],
+  'I': ['France', 'Senegal', 'Iraq', 'Norway'],
+  'J': ['Argentina', 'Algeria', 'Austria', 'Jordan'],
+  'K': ['Portugal', 'DR Congo', 'Uzbekistan', 'Colombia'],
+  'L': ['England', 'Croatia', 'Ghana', 'Panama']
 };
 
 const COLORS = ["#7F77DD","#D4537E","#378ADD","#1D9E75","#D85A30","#639922","#534AB7","#BA7517","#E24B4A","#0F6E56","#993C1D","#185FA5"];
 
-// Group stage pts kept for reference in scoring UI only — not used in calcCountryScore
-const STAGE_PTS = {r32:4, r16:6, qf:8, sf:12, runner_up:16, champion:25};
-
-// ─── State ────────────────────────────────────────────────────────────────────
-let state = {
-  members: ["andy","d-cast","fonzy","geoff","helen","kelby","lucho","merman","hotpot","trent","vick","weston"],
-  memberOrder: Array.from({length:12}, (_, i) => i),
-  draftOrder: [],
-  pickIndex: 0,
-  rosters: {},
-  countryStages: {},
-  countryWins: {},
-  countryDraws: {},
-  draftDone: false,
-  shuffled: false
+// Fixed roster assignment (as per spec)
+const FIXED_ROSTERS = {
+  "kelby":   ["Spain", "Türkiye", "Ivory Coast", "Curaçao"],
+  "vick":    ["France", "Ecuador", "Egypt", "Cape Verde"],
+  "andy":    ["Netherlands", "Canada", "Austria", "Iraq"],
+  "hotpot":  ["Germany", "South Korea", "Iran", "DR Congo"],
+  "fonzy":   ["England", "Senegal", "Sweden", "Uzbekistan"],
+  "d-cast":  ["Portugal", "Japan", "Czechia", "Haiti"],
+  "lucho":   ["Brazil", "Uruguay", "Algeria", "Jordan"],
+  "trent":   ["Morocco", "Switzerland", "Saudi Arabia", "Qatar"],
+  "geoff":   ["Argentina", "Colombia", "Scotland", "Ghana"],
+  "merman":  ["USA", "Croatia", "Paraguay", "New Zealand"],
+  "weston":  ["Belgium", "Norway", "Bosnia and Herzegovina", "Tunisia"],
+  "helen":   ["Australia", "Mexico", "Panama", "South Africa"]
 };
 
-let ignoreNextRemote = false;
-let saveTimer = null;
-
-// ─── Lock ─────────────────────────────────────────────────────────────────────
-const LOCK_DATE = new Date(2026, 5, 11); // June 11 2026 (month is 0-indexed)
-function isPoolLocked() { return new Date() >= LOCK_DATE; }
-
-// ─── Firebase sync ────────────────────────────────────────────────────────────
-poolRef.on('value', snapshot => {
-  if (ignoreNextRemote) { ignoreNextRemote = false; return; }
-  const data = snapshot.val();
-  if (data) {
-    Object.assign(state, data);
-    refreshAllViews();
-    setSyncStatus('ok', 'Live — changes sync instantly for all members');
-  } else {
-    setSyncStatus('ok', 'New pool — add members and start the draft');
-  }
-  hideLoading();
-}, err => {
-  setSyncStatus('err', 'Firebase error: ' + err.message);
-  hideLoading();
-});
-
-db.ref('.info/connected').on('value', snap => {
-  if (snap.val()) {
-    setSyncStatus('ok', 'Live — changes sync instantly for all members');
-  } else {
-    setSyncStatus('err', 'Offline — reconnecting...');
-  }
-});
-
-function saveToFirebase() {
-  setSyncStatus('saving', 'Saving...');
-  ignoreNextRemote = true;
-  poolRef.set(state)
-    .then(() => setSyncStatus('ok', 'Saved — all members will see this instantly'))
-    .catch(e => { setSyncStatus('err', 'Save failed: ' + e.message); ignoreNextRemote = false; });
-}
-
-function scheduleSave() {
-  clearTimeout(saveTimer);
-  setSyncStatus('saving', 'Saving...');
-  saveTimer = setTimeout(saveToFirebase, 500);
-}
-
-function hideLoading() {
-  const ol = document.getElementById('loading-overlay');
-  ol.classList.add('hidden');
-  setTimeout(() => ol.style.display = 'none', 350);
-}
-
-function setSyncStatus(status, msg) {
-  document.getElementById('sync-dot').className = 'sync-dot' + (status ? ' ' + status : '');
-  document.getElementById('sync-label').textContent = msg;
-}
-
-// ─── Export / Import ──────────────────────────────────────────────────────────
-function exportState() {
-  const code = 'WCPOOL:' + btoa(unescape(encodeURIComponent(JSON.stringify(state))));
-  if (navigator.clipboard) {
-    navigator.clipboard.writeText(code).then(() => showToast('Backup saved!')).catch(() => showExportFallback(code));
-  } else { showExportFallback(code); }
-}
-
-function showExportFallback(code) {
-  document.getElementById('import-panel').style.display = 'block';
-  const ta = document.getElementById('import-text');
-  ta.value = code; ta.focus(); ta.select();
-  showToast('Copy the code from the box below');
-}
-
-function toggleImport() {
-  const p = document.getElementById('import-panel');
-  p.style.display = p.style.display === 'none' ? 'block' : 'none';
-  if (p.style.display === 'block') document.getElementById('import-text').value = '';
-}
-
-function importState() {
-  const raw = document.getElementById('import-text').value.trim();
-  try {
-    const json = raw.startsWith('WCPOOL:') ? decodeURIComponent(escape(atob(raw.slice(7)))) : raw;
-    Object.assign(state, JSON.parse(json));
-    document.getElementById('import-panel').style.display = 'none';
-    document.getElementById('import-text').value = '';
-    refreshAllViews();
-    saveToFirebase();
-    showToast('Backup imported and saved to Firebase!');
-  } catch(e) { showToast('Invalid backup code — check and try again'); }
-}
-
-// ─── Reset ────────────────────────────────────────────────────────────────────
-function resetPool() {
-  if (isPoolLocked()) {
-    const password = prompt('Pool is locked. Enter commissioner password to reset:');
-    if (password !== 'fuck') { showToast('Unauthorized — reset denied'); return; }
-  }
-  if (!confirm('Reset the entire pool for ALL members? This cannot be undone.')) return;
-  const fresh = {
-    members: ["andy","d-cast","fonzy","geoff","helen","kelby","lucho","merman","hotpot","trent","vick","weston"],
-    memberOrder: Array.from({length:12}, (_, i) => i),
-    draftOrder: [], pickIndex: 0, rosters: {},
-    countryStages: {}, countryWins: {}, countryDraws: {},
-    draftDone: false, shuffled: false
-  };
-  Object.assign(state, fresh);
-  poolRef.set(fresh);
-  refreshAllViews();
-  document.getElementById('order-preview').style.display = 'none';
-  showToast('Pool reset for all members');
-}
-
-// ─── Helpers ──────────────────────────────────────────────────────────────────
-function showToast(msg) {
-  const t = document.getElementById('toast');
-  t.textContent = msg; t.classList.add('show');
-  clearTimeout(t._tid);
-  t._tid = setTimeout(() => t.classList.remove('show'), 2800);
-}
-
-function shuffle(arr) {
-  const a = [...arr];
-  for (let i = a.length - 1; i > 0; i--) {
-    const j = Math.floor(Math.random() * (i + 1));
-    [a[i], a[j]] = [a[j], a[i]];
-  }
-  return a;
-}
-
-function getMultiplier(rank) { return rank <= 10 ? 1 : rank <= 20 ? 1.25 : rank <= 35 ? 1.5 : 2.0; }
-function multClass(rank)     { return rank <= 10 ? 'm1' : rank <= 20 ? 'm2' : rank <= 35 ? 'm3' : 'm4'; }
-function multLabel(rank)     { return rank <= 10 ? '×1' : rank <= 20 ? '×1.25' : rank <= 35 ? '×1.5' : '×2'; }
-
-// ─── Group stage win/draw counters ────────────────────────────────────────────
-function getGroupWins(name)  { return state.countryWins?.[name]  || 0; }
-function getGroupDraws(name) { return state.countryDraws?.[name] || 0; }
-
-function setGroupWins(name, n) {
-  if (!state.countryWins)  state.countryWins  = {};
-  state.countryWins[name]  = Math.min(3, Math.max(0, n));
-  scheduleSave();
-  renderTournament(); renderRosters(); renderLeaderboard();
-}
-
-function setGroupDraws(name, n) {
-  if (!state.countryDraws) state.countryDraws = {};
-  state.countryDraws[name] = Math.min(3, Math.max(0, n));
-  scheduleSave();
-  renderTournament(); renderRosters(); renderLeaderboard();
-}
-
-function incrementGroupWin(name)  { setGroupWins(name,  getGroupWins(name)  + 1); }
-function decrementGroupWin(name)  { setGroupWins(name,  getGroupWins(name)  - 1); }
-function incrementGroupDraw(name) { setGroupDraws(name, getGroupDraws(name) + 1); }
-function decrementGroupDraw(name) { setGroupDraws(name, getGroupDraws(name) - 1); }
-
-// ─── Scoring ──────────────────────────────────────────────────────────────────
-function calcCountryScore(name) {
-  const c = COUNTRIES.find(x => x.name === name);
-  if (!c) return 0;
-  const mult = getMultiplier(c.rank);
-  let pts = 0;
-  // Group stage: from win/draw counters
-  pts += getGroupWins(name)  * 3;
-  pts += getGroupDraws(name) * 1;
-  // Knockout stages: base pts × multiplier
-  (state.countryStages[name] || []).forEach(s => {
-    const base = STAGE_PTS[s] || 0;
-    pts += Math.round(base * mult);
-    if (s === 'champion') pts += Math.round(c.rank * 0.1 * base);
-  });
-  return pts;
-}
-
-function calcMemberScore(m) {
-  return (state.rosters[m] || []).reduce((sum, t) => sum + calcCountryScore(t.name), 0);
-}
-
-// ─── Setup ────────────────────────────────────────────────────────────────────
-function readMemberInputs() {
-  document.querySelectorAll('#member-list .member-row input').forEach((inp, i) => {
-    state.members[i] = inp.value || `Member ${i + 1}`;
-  });
-}
-
-function buildSnakeOrder() {
-  const order = [];
-  for (let r = 0; r < 4; r++) {
-    const row = [...state.memberOrder];
-    if (r % 2 === 1) row.reverse();
-    row.forEach(i => order.push(i));
-  }
-  return order;
-}
-
-function initMembers() {
-  const ml = document.getElementById('member-list');
-  ml.innerHTML = '';
-  state.members.forEach((m, i) => {
-    const row = document.createElement('div');
-    row.className = 'member-row';
-    row.innerHTML = `<div class="dot-badge" style="background:${COLORS[i]}22;color:${COLORS[i]}">${i + 1}</div><input type="text" value="${m}" placeholder="Member ${i + 1}" data-idx="${i}" />`;
-    const inp = row.querySelector('input');
-    inp.addEventListener('input', (e) => {
-      state.members[e.target.dataset.idx] = e.target.value || `Member ${parseInt(e.target.dataset.idx) + 1}`;
-      renderDraftOrderList();
-      scheduleSave();
-    });
-    ml.appendChild(row);
-  });
-  renderDraftOrderList();
-}
-
-function renderDraftOrderList() {
-  const container = document.getElementById('draft-order-list');
-  if (!container) return;
-  
-  container.innerHTML = '';
-  state.memberOrder.forEach((memberIdx, position) => {
-    const div = document.createElement('div');
-    div.className = 'draft-order-item';
-    div.setAttribute('data-position', position);
-    div.setAttribute('data-member-idx', memberIdx);
-    div.draggable = true;
-    
-    div.innerHTML = `
-      <span class="draft-order-handle">⋮⋮</span>
-      <span class="draft-order-number">#${position + 1}</span>
-      <span class="draft-order-name">${state.members[memberIdx]}</span>
-      <span class="draft-order-color" style="background:${COLORS[memberIdx]}"></span>
-    `;
-    
-    // Drag and drop event handlers
-    div.addEventListener('dragstart', handleDragStart);
-    div.addEventListener('dragover', handleDragOver);
-    div.addEventListener('drop', handleDrop);
-    div.addEventListener('dragend', handleDragEnd);
-    
-    container.appendChild(div);
-  });
-}
-
-let draggedItem = null;
-
-function handleDragStart(e) {
-  draggedItem = this;
-  this.classList.add('dragging');
-  e.dataTransfer.effectAllowed = 'move';
-  e.dataTransfer.setData('text/plain', this.getAttribute('data-position'));
-}
-
-function handleDragOver(e) {
-  e.preventDefault();
-  e.dataTransfer.dropEffect = 'move';
-}
-
-function handleDrop(e) {
-  e.preventDefault();
-  const targetItem = this;
-  
-  if (draggedItem && targetItem && draggedItem !== targetItem) {
-    const fromPos = parseInt(draggedItem.getAttribute('data-position'));
-    const toPos = parseInt(targetItem.getAttribute('data-position'));
-    
-    // Reorder the memberOrder array
-    const newOrder = [...state.memberOrder];
-    const [movedItem] = newOrder.splice(fromPos, 1);
-    newOrder.splice(toPos, 0, movedItem);
-    state.memberOrder = newOrder;
-    state.shuffled = true;
-    
-    renderDraftOrderList();
-    scheduleSave();
-  }
-}
-
-function handleDragEnd(e) {
-  this.classList.remove('dragging');
-  draggedItem = null;
-}
-
-// FIX 3: startDraft now checks the lock so it can't wipe rosters after June 11
-function startDraft() {
-  if (isPoolLocked()) { showToast('⛔ Draft is locked — tournament has started'); return; }
-  if (state.draftDone && !confirm('Draft is already complete. Restart and wipe all rosters?')) return;
-  readMemberInputs();
-  
-  // Set default order if none exists (12 members 0-11)
-  if (!state.memberOrder || state.memberOrder.length !== 12) {
-    state.memberOrder = Array.from({length: 12}, (_, i) => i);
-  }
-  
-  state.draftOrder = buildSnakeOrder();
-  state.pickIndex = 0;
-  state.rosters = {};
-  state.members.forEach(m => { state.rosters[m] = []; });
-  state.draftDone = false;
-  state.countryStages = {};
-  state.countryWins = {};
-  state.countryDraws = {};
-  showTab('draft');
-  saveToFirebase();
-}
-
-// ─── Draft ────────────────────────────────────────────────────────────────────
-function renderDraft() {
-  const pick = state.pickIndex;
-  const memberIdx = state.draftOrder[pick] ?? null;
-  const round = Math.floor(pick / 12) + 1;
-
-  document.getElementById('d-pick').textContent      = Math.min(pick + 1, 48);
-  document.getElementById('d-round').textContent     = Math.min(round, 4);
-  document.getElementById('d-remaining').textContent = Math.max(48 - pick, 0);
-
-  const cpNum  = document.getElementById('cp-num');
-  const cpName = document.getElementById('cp-name');
-  const cpSub  = document.getElementById('cp-sub');
-
-  if (state.draftDone) {
-    document.getElementById('done-banner').style.display = 'block';
-    cpNum.textContent = '✓'; cpName.textContent = 'Draft complete';
-    cpSub.textContent = 'All 48 countries drafted';
-    cpNum.style.color = 'var(--success-text)';
-  } else if (!state.draftOrder.length) {
-    document.getElementById('done-banner').style.display = 'none';
-    cpNum.textContent = '—'; cpName.textContent = 'Draft not started';
-    cpSub.textContent = 'Go to Setup tab to configure members';
-    cpNum.style.color = 'var(--info-text)';
-  } else {
-    document.getElementById('done-banner').style.display = 'none';
-    cpNum.textContent = `#${pick + 1}`;
-    cpName.textContent = state.members[memberIdx];
-    cpSub.textContent = `Round ${Math.min(round, 4)} · ${round % 2 === 1 ? '→ forward' : '← reverse'} snake`;
-    cpNum.style.color = COLORS[memberIdx];
-  }
-
-  const queue = document.getElementById('draft-queue');
-  queue.innerHTML = '';
-  if (state.draftOrder.length) {
-    const end = Math.min(state.draftOrder.length, pick + 18);
-    for (let i = pick; i < end; i++) {
-      const mi = state.draftOrder[i];
-      const div = document.createElement('div');
-      div.className = 'q-item';
-      if (i === pick) div.style.cssText = `background:${COLORS[mi]}18;border-color:${COLORS[mi]}55;font-weight:500`;
-      div.innerHTML = `<span style="width:9px;height:9px;border-radius:50%;background:${COLORS[mi]};display:inline-block;margin-right:8px"></span><span style="flex:1;font-size:12px">${state.members[mi]}</span><span style="font-size:11px;color:var(--text3)">#${i + 1}</span>`;
-      queue.appendChild(div);
-    }
-  }
-
-  const grid = document.getElementById('countries-grid');
-  const drafted = new Set(Object.values(state.rosters).flat().map(c => c.name));
-  grid.innerHTML = '';
-  COUNTRIES.forEach(c => {
-    const div = document.createElement('div');
-    div.className = 'country-card' + (drafted.has(c.name) ? ' drafted' : '');
-    div.innerHTML = `<div style="font-size:22px;margin-bottom:3px">${c.flag}</div><div style="font-size:11px;font-weight:500;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${c.name}</div><div style="display:flex;justify-content:space-between;margin-top:3px"><span style="font-size:10px;color:var(--text3)">#${c.rank}</span><span class="mult-badge ${multClass(c.rank)}">${multLabel(c.rank)}</span></div>`;
-    if (!drafted.has(c.name) && !state.draftDone && state.draftOrder.length) div.onclick = () => makePick(c);
-    grid.appendChild(div);
-  });
-}
-
-function makePick(country) {
-  if (state.draftDone) return;
-  const allDrafted = Object.values(state.rosters).flat().map(t => t.name);
-  if (allDrafted.includes(country.name)) return;
-  const mi = state.draftOrder[state.pickIndex];
-  const mn = state.members[mi];
-  if (!state.rosters[mn]) state.rosters[mn] = [];
-  state.rosters[mn].push(country);
-  state.pickIndex++;
-  if (state.pickIndex >= 48) state.draftDone = true;
-  renderDraft(); renderRosters(); renderLeaderboard();
-  scheduleSave();
-}
-
-// ─── Rosters ──────────────────────────────────────────────────────────────────
-function renderRosters() {
-  const grid = document.getElementById('rosters-grid');
-  grid.innerHTML = '';
-  state.members.forEach((m, i) => {
-    const teams = state.rosters[m] || [];
-    const score = calcMemberScore(m);
-    const card = document.createElement('div');
-    card.className = 'roster-card';
-    card.innerHTML =
-      `<div style="display:flex;align-items:center;gap:8px;margin-bottom:10px">
-        <span style="width:10px;height:10px;border-radius:50%;background:${COLORS[i]};display:inline-block"></span>
-        <span style="flex:1;font-weight:500">${m}</span>
-        <span style="color:var(--info-text);font-weight:500">${score} pts</span>
-       </div>` +
-      teams.map(t => {
-        const pts = calcCountryScore(t.name);
-        // FIX 4: Only show score if > 0, no spurious "+0"
-        const ptsLabel = pts > 0 ? `+${pts}` : '';
-        return `<div class="roster-team"><span style="font-size:16px">${t.flag}</span><span style="flex:1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${t.name}</span><span style="color:var(--info-text);min-width:28px;text-align:right;font-size:11px;font-weight:500">${ptsLabel}</span></div>`;
-      }).join('');
-    grid.appendChild(card);
-  });
-}
-
-// ─── Tournament ───────────────────────────────────────────────────────────────
-
-// Knockout stage definitions: key, display label, max teams, required previous stage
+const STAGE_PTS = {r32:4, r16:6, qf:8, sf:12, runner_up:16, champion:25};
 const KNOCKOUT_STAGES = [
   {key:'r32', label:'Round of 32', cap:16, prev:null},
   {key:'r16', label:'Round of 16', cap:8, prev:'r32'},
@@ -752,242 +267,125 @@ const KNOCKOUT_STAGES = [
   {key:'champion', label:'Champion', cap:1, prev:'sf'}
 ];
 
-// Count how many teams are currently marked for a given stage
+let state = {
+  members: ["andy","d-cast","fonzy","geoff","helen","kelby","lucho","merman","hotpot","trent","vick","weston"],
+  rosters: {},
+  countryStages: {},
+  countryWins: {},
+  countryDraws: {},
+  draftDone: true   // draft is always done because rosters are fixed
+};
+
+// Helper to initialize rosters from fixed assignments
+function buildFixedRosters() {
+  let rosters = {};
+  for (let member of state.members) {
+    let lower = member.toLowerCase();
+    let countries = FIXED_ROSTERS[lower] || [];
+    rosters[member] = countries.map(cname => {
+      let found = COUNTRIES.find(c => c.name === cname);
+      if (!found) console.warn("Missing country:", cname);
+      return found || {name:cname, flag:"🏁", rank:99};
+    });
+  }
+  return rosters;
+}
+
+// Lock after June 11 2026 (same as original)
+const LOCK_DATE = new Date(2026, 5, 11);
+function isPoolLocked() { return new Date() >= LOCK_DATE; }
+
+let ignoreNextRemote = false, saveTimer = null;
+
+// Firebase sync
+poolRef.on('value', snapshot => {
+  if (ignoreNextRemote) { ignoreNextRemote = false; return; }
+  const data = snapshot.val();
+  if (data) {
+    Object.assign(state, data);
+    // Ensure rosters exist (if fresh reset)
+    if (!state.rosters || Object.keys(state.rosters).length === 0) {
+      state.rosters = buildFixedRosters();
+    }
+    refreshAllViews();
+    setSyncStatus('ok', 'Live — rosters fixed, track tournament');
+  } else {
+    state.rosters = buildFixedRosters();
+    state.countryStages = {};
+    state.countryWins = {};
+    state.countryDraws = {};
+    state.draftDone = true;
+    refreshAllViews();
+    setSyncStatus('ok', 'Ready — fixed rosters loaded');
+  }
+  hideLoading();
+}, err => { setSyncStatus('err', 'Firebase error'); hideLoading(); });
+
+db.ref('.info/connected').on('value', snap => {
+  if (snap.val()) setSyncStatus('ok', 'Live — changes sync');
+  else setSyncStatus('err', 'Offline');
+});
+
+function saveToFirebase() {
+  setSyncStatus('saving', 'Saving...');
+  ignoreNextRemote = true;
+  poolRef.set(state).then(() => setSyncStatus('ok', 'Saved')).catch(e => { setSyncStatus('err', 'Save failed'); ignoreNextRemote = false; });
+}
+function scheduleSave() { clearTimeout(saveTimer); setSyncStatus('saving', 'Saving...'); saveTimer = setTimeout(saveToFirebase, 500); }
+function hideLoading() { document.getElementById('loading-overlay').classList.add('hidden'); setTimeout(() => document.getElementById('loading-overlay').style.display = 'none', 350); }
+function setSyncStatus(status, msg) { document.getElementById('sync-dot').className = 'sync-dot' + (status ? ' ' + status : ''); document.getElementById('sync-label').textContent = msg; }
+
+function showToast(msg) { const t = document.getElementById('toast'); t.textContent = msg; t.classList.add('show'); clearTimeout(t._tid); t._tid = setTimeout(() => t.classList.remove('show'), 2800); }
+
+function getMultiplier(rank) { return rank <= 10 ? 1 : rank <= 20 ? 1.25 : rank <= 35 ? 1.5 : 2.0; }
+function multClass(rank) { return rank <= 10 ? 'm1' : rank <= 20 ? 'm2' : rank <= 35 ? 'm3' : 'm4'; }
+function multLabel(rank) { return rank <= 10 ? '×1' : rank <= 20 ? '×1.25' : rank <= 35 ? '×1.5' : '×2'; }
+
+function getGroupWins(name)  { return state.countryWins?.[name] || 0; }
+function getGroupDraws(name) { return state.countryDraws?.[name] || 0; }
+function setGroupWins(name, n) { if (!state.countryWins) state.countryWins = {}; state.countryWins[name] = Math.min(3, Math.max(0, n)); scheduleSave(); renderTournament(); renderRosters(); renderLeaderboard(); }
+function setGroupDraws(name, n) { if (!state.countryDraws) state.countryDraws = {}; state.countryDraws[name] = Math.min(3, Math.max(0, n)); scheduleSave(); renderTournament(); renderRosters(); renderLeaderboard(); }
+function incrementGroupWin(name) { setGroupWins(name, getGroupWins(name)+1); }
+function decrementGroupWin(name) { setGroupWins(name, getGroupWins(name)-1); }
+function incrementGroupDraw(name) { setGroupDraws(name, getGroupDraws(name)+1); }
+function decrementGroupDraw(name) { setGroupDraws(name, getGroupDraws(name)-1); }
+
+function calcCountryScore(name) {
+  const c = COUNTRIES.find(x => x.name === name);
+  if (!c) return 0;
+  const mult = getMultiplier(c.rank);
+  let pts = getGroupWins(name) * 3 + getGroupDraws(name) * 1;
+  (state.countryStages[name] || []).forEach(s => {
+    const base = STAGE_PTS[s] || 0;
+    pts += Math.round(base * mult);
+    if (s === 'champion') pts += Math.round(c.rank * 0.1 * base);
+  });
+  return pts;
+}
+function calcMemberScore(m) { return (state.rosters[m] || []).reduce((sum, t) => sum + calcCountryScore(t.name), 0); }
+
 function stageCount(key) {
   let count = 0;
-  for (const country of COUNTRIES) {
-    const stages = state.countryStages[country.name];
-    if (stages && stages.includes(key)) {
-      count++;
-    }
-  }
+  for (let c of COUNTRIES) if ((state.countryStages[c.name] || []).includes(key)) count++;
   return count;
 }
 
 function recordAdvance(name, stage) {
-  // Initialize if needed
-  if (!state.countryStages[name]) {
-    state.countryStages[name] = [];
-  }
-  
-  const alreadyDone = state.countryStages[name].includes(stage);
+  if (!state.countryStages[name]) state.countryStages[name] = [];
+  const already = state.countryStages[name].includes(stage);
   const stageDef = KNOCKOUT_STAGES.find(s => s.key === stage);
-  
-  if (!alreadyDone) {
-    // For Round of 32 (no previous stage), skip prerequisite check
-    if (stageDef.prev !== null) {
-      // Check prerequisite: must have advanced in the previous round
-      if (!state.countryStages[name].includes(stageDef.prev)) {
-        showToast(name + " hasn't advanced from the " + stageDef.prev + " yet");
-        return;
-      }
-    }
-    
-    // Check cap: cannot exceed max teams for this stage (skip for champion/runner-up which have caps of 1)
-    if (stageCount(stage) >= stageDef.cap) {
-      showToast('Max ' + stageDef.cap + ' teams allowed in ' + stageDef.label);
-      return;
-    }
-    
-    // Add the stage
+  if (!already) {
+    if (stageDef.prev && !state.countryStages[name].includes(stageDef.prev)) { showToast(`${name} must advance from ${stageDef.prev} first`); return; }
+    if (stageCount(stage) >= stageDef.cap) { showToast(`Max ${stageDef.cap} teams for ${stageDef.label}`); return; }
     state.countryStages[name].push(stage);
-    showToast(name + " advanced to " + stageDef.label);
+    showToast(`${name} advanced to ${stageDef.label}`);
   } else {
-    // Remove the stage and cascade remove later stages
-    const stageOrder = KNOCKOUT_STAGES.map(s => s.key);
-    const fromIdx = stageOrder.indexOf(stage);
-    // Remove this stage and all later stages
-    for (let i = fromIdx; i < stageOrder.length; i++) {
-      const laterStage = stageOrder[i];
-      const idx = state.countryStages[name].indexOf(laterStage);
-      if (idx !== -1) {
-        state.countryStages[name].splice(idx, 1);
-      }
+    const order = KNOCKOUT_STAGES.map(s => s.key);
+    const idx = order.indexOf(stage);
+    for (let i = idx; i < order.length; i++) {
+      let rmIdx = state.countryStages[name].indexOf(order[i]);
+      if (rmIdx !== -1) state.countryStages[name].splice(rmIdx, 1);
     }
-    showToast(name + " removed from " + stageDef.label);
+    showToast(`${name} removed from ${stageDef.label}`);
   }
-  
-  // Re-render and save
-  renderTournament();
-  renderRosters();
-  renderLeaderboard();
-  scheduleSave();
-}
-
-function renderTournament() {
-  const el = document.getElementById('tournament-content');
-  if (!state.draftDone) {
-    el.innerHTML = '<p style="font-size:13px;color:var(--text2)">Complete the draft first to unlock the tournament tracker.</p>';
-    return;
-  }
-
-  let html = '<div class="round-label">Group Stage — click +/- to add wins/draws (max 3 per team)</div><div class="matches-grid">';
-
-  for (const [groupName, teams] of Object.entries(GROUPS_2026)) {
-    html += '<div class="match-card"><div style="font-size:10px;color:var(--text3);margin-bottom:6px">Group ' + groupName + '</div>';
-    teams.forEach(teamName => {
-      const t = COUNTRIES.find(c => c.name === teamName);
-      if (!t) return;
-      const wins = getGroupWins(t.name);
-      const draws = getGroupDraws(t.name);
-      const groupPoints = (wins * 3) + draws;
-      html += '<div class="match-team-row">'
-        + '<div style="display:flex;align-items:center;gap:8px;margin-bottom:4px;width:100%">'
-        + '<span style="font-size:20px">' + t.flag + '</span>'
-        + '<span style="font-size:13px;font-weight:500;flex:1">' + t.name + '</span>'
-        + '<span class="mult-badge ' + multClass(t.rank) + '">' + multLabel(t.rank) + '</span>'
-        + '</div>'
-        + '<div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap;padding-left:28px">'
-        + '<div style="display:flex;gap:4px;align-items:center;background:var(--bg2);padding:3px 8px;border-radius:20px">'
-        + '<button class="kbtn" onclick="decrementGroupWin(\'' + t.name.replace(/'/g, "\\'") + '\')" style="background:#4a4a4a;color:white;border:none;padding:2px 8px;font-size:12px">-</button>'
-        + '<span style="min-width:32px;text-align:center;font-weight:bold;font-size:12px">' + wins + 'W</span>'
-        + '<button class="kbtn" onclick="incrementGroupWin(\'' + t.name.replace(/'/g, "\\'") + '\')" style="background:#4a4a4a;color:white;border:none;padding:2px 8px;font-size:12px">+</button>'
-        + '</div>'
-        + '<div style="display:flex;gap:4px;align-items:center;background:var(--bg2);padding:3px 8px;border-radius:20px">'
-        + '<button class="kbtn" onclick="decrementGroupDraw(\'' + t.name.replace(/'/g, "\\'") + '\')" style="background:#4a4a4a;color:white;border:none;padding:2px 8px;font-size:12px">-</button>'
-        + '<span style="min-width:32px;text-align:center;font-weight:bold;font-size:12px">' + draws + 'D</span>'
-        + '<button class="kbtn" onclick="incrementGroupDraw(\'' + t.name.replace(/'/g, "\\'") + '\')" style="background:#4a4a4a;color:white;border:none;padding:2px 8px;font-size:12px">+</button>'
-        + '</div>'
-        + '<span style="background:var(--info-bg);color:var(--info-text);padding:3px 10px;border-radius:20px;font-size:12px;font-weight:bold">' + groupPoints + ' pts</span>'
-        + '</div>'
-        + '</div>';
-    });
-    html += '</div>';
-  }
-  html += '</div>';
-
-  KNOCKOUT_STAGES.forEach(function(stageDef) {
-    const key = stageDef.key;
-    const label = stageDef.label;
-    const cap = stageDef.cap;
-    const prev = stageDef.prev;
-    const selected = stageCount(key);
-    const capFull = selected >= cap;
-
-    html += '<div class="round-label" style="display:flex;align-items:center;gap:8px">'
-      + '<span>' + label + '</span>'
-      + '<span style="font-size:11px;padding:2px 8px;border-radius:10px;font-weight:500;background:'
-      + (capFull ? 'var(--success-bg)' : 'var(--bg2)') + ';color:'
-      + (capFull ? 'var(--success-text)' : 'var(--text3)') + '">' + selected + '/' + cap + '</span>'
-      + '</div>'
-      + '<div class="matches-grid">';
-
-    COUNTRIES.forEach(function(c) {
-      const done = (state.countryStages[c.name] || []).includes(key);
-      const prevOk = !prev || (state.countryStages[c.name] || []).includes(prev);
-
-      let btnLabel, btnStyle, onclickVal;
-      if (done) {
-        btnLabel = '✓ done';
-        btnStyle = 'background:var(--success-bg);color:var(--success-text);border-color:var(--success-border)';
-        onclickVal = 'recordAdvance(\'' + c.name.replace(/'/g, "\\'") + '\', \'' + key + '\')';
-      } else if (!prevOk) {
-        btnLabel = 'n/a';
-        btnStyle = 'cursor:not-allowed;opacity:0.4;background:none;color:var(--text3)';
-        onclickVal = 'showToast(\'' + c.name.replace(/'/g, "\\'") + ' hasn\\\'t advanced from the previous round\')';
-      } else if (capFull) {
-        btnLabel = 'full';
-        btnStyle = 'cursor:not-allowed;opacity:0.4;background:none;color:var(--text3)';
-        onclickVal = 'showToast(\'Max ' + cap + ' teams for ' + label + '\')';
-      } else {
-        btnLabel = 'record';
-        btnStyle = '';
-        onclickVal = 'recordAdvance(\'' + c.name.replace(/'/g, "\\'") + '\', \'' + key + '\')';
-      }
-
-      html += '<div class="match-card" style="display:flex;align-items:center;gap:8px;padding:8px 12px;">'
-        + '<span style="font-size:18px">' + c.flag + '</span>'
-        + '<span style="flex:1;font-size:12px">' + c.name + '</span>'
-        + '<span class="mult-badge ' + multClass(c.rank) + '">' + multLabel(c.rank) + '</span>'
-        + '<button class="adv-btn ' + (done ? 'done' : '') + '" style="' + btnStyle + '" onclick="' + onclickVal + '">' + btnLabel + '</button>'
-        + '</div>';
-    });
-
-    html += '</div>';
-  });
-
-  el.innerHTML = html;
-}
-
-  // Add this temporarily to debug
-function debugRecordAdvance(name, stage) {
-  console.log("Attempting to advance:", name, stage);
-  console.log("Current countryStages:", JSON.parse(JSON.stringify(state.countryStages[name] || [])));
-  console.log("Stage definition:", KNOCKOUT_STAGES.find(s => s.key === stage));
-  console.log("Current count for this stage:", stageCount(stage));
-  recordAdvance(name, stage);
-}
-  
-// ─── Leaderboard ──────────────────────────────────────────────────────────────
-function renderLeaderboard() {
-  const el = document.getElementById('lb-content');
-  if (!state.draftDone) { el.innerHTML = '<p style="font-size:13px;color:var(--text2)">Complete the draft first.</p>'; return; }
-  const scores = state.members
-    .map((m, i) => ({name:m, score:calcMemberScore(m), color:COLORS[i]}))
-    .sort((a, b) => b.score - a.score);
-  const maxScore = Math.max(...scores.map(s => s.score), 1);
-  let html = `<table class="lb-table"><thead><tr><th></th><th>Member</th><th style="text-align:right">Points</th><th style="min-width:120px">Progress</th></tr></thead><tbody>`;
-  scores.forEach((s, i) => {
-    const pct   = Math.round((s.score / maxScore) * 100);
-    const medal = i === 0 ? '🥇' : i === 1 ? '🥈' : i === 2 ? '🥉' : String(i + 1);
-    html += `<tr>
-      <td style="font-size:${i < 3 ? 16 : 13}px;font-weight:500;width:36px;color:${i < 3 ? '#ba7517' : 'var(--text3)'}">${medal}</td>
-      <td><span style="display:inline-block;width:8px;height:8px;border-radius:50%;background:${s.color};margin-right:7px"></span>${s.name}</td>
-      <td style="text-align:right;font-weight:500">${s.score}</td>
-      <td><div class="bar-wrap"><div class="bar-fill" style="width:${pct}%;background:${s.color}"></div></div></td>
-    </tr>`;
-  });
-  html += '</tbody></table>';
-
-  // Country breakdown
-  const cScores = COUNTRIES
-    .map(c => ({...c, pts:calcCountryScore(c.name), stages:state.countryStages[c.name]||[], wins:getGroupWins(c.name), draws:getGroupDraws(c.name)}))
-    .filter(c => c.pts > 0)
-    .sort((a, b) => b.pts - a.pts);
-
-  if (cScores.length) {
-    html += `<div style="margin-top:1.5rem">
-      <div style="font-size:11px;font-weight:500;color:var(--text2);text-transform:uppercase;letter-spacing:.07em;margin-bottom:10px">Country scores</div>
-      <table class="lb-table"><thead><tr><th>Country</th><th>Group</th><th>Knockout stages</th><th>Mult</th><th style="text-align:right">Pts</th></tr></thead><tbody>`;
-    cScores.forEach(c => {
-      const groupStr = c.wins || c.draws ? `${c.wins}W ${c.draws}D` : '—';
-      html += `<tr>
-        <td><span style="margin-right:6px">${c.flag}</span>${c.name}</td>
-        <td style="font-size:11px;color:var(--text2)">${groupStr}</td>
-        <td style="font-size:11px;color:var(--text2)">${c.stages.join(', ') || '—'}</td>
-        <td><span class="mult-badge ${multClass(c.rank)}">${multLabel(c.rank)}</span></td>
-        <td style="text-align:right;font-weight:500">${c.pts}</td>
-      </tr>`;
-    });
-    html += '</tbody></table></div>';
-  }
-  el.innerHTML = html;
-}
-
-// ─── Navigation ───────────────────────────────────────────────────────────────
-function showTab(name) {
-  document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
-  document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
-  document.getElementById('tab-' + name).classList.add('active');
-  document.querySelectorAll('.tab').forEach(t => {
-    if (t.getAttribute('onclick')?.includes(`'${name}'`)) t.classList.add('active');
-  });
-  if (name === 'rosters')     renderRosters();
-  if (name === 'tournament')  renderTournament();
-  if (name === 'leaderboard') renderLeaderboard();
-}
-
-function refreshAllViews() {
-  initMembers();
-  renderDraft();
-  renderRosters();
-  const active = document.querySelector('.section.active');
-  if (active) {
-    const name = active.id.replace('tab-', '');
-    if (name === 'tournament')  renderTournament();
-    if (name === 'leaderboard') renderLeaderboard();
-  }
-}
-</script>
-</body>
-</html>
+  scheduleSave(); renderTournament(); renderRosters(); renderLeaderboard
