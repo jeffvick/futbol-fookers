@@ -619,5 +619,6 @@ function recordAdvance(name, stage) {
     }
     showToast(`${name} removed from ${stageDef.label}`);
   }
-    scheduleSave(); renderTournament(); renderRosters(); renderLeaderboard();
-}
+  scheduleSave(); renderTournament(); renderRosters(); renderLeaderboard();
+}  // <-- Make sure this closing brace is here
+}  
