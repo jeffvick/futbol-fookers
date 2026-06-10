@@ -190,16 +190,7 @@
 
 <script>
 
-  // Check if Firebase loaded
-if (typeof firebase === 'undefined') {
-  console.error("Firebase failed to load!");
-  document.getElementById('loading-overlay').innerHTML = '<div style="color:red">❌ Firebase failed to load</div>';
-} else {
-  console.log("Firebase loaded, initializing...");
-  // Your firebase.initializeApp code here
-}
-// ─── Firebase config ────────────────────────────────────────────────────────
-// ─── Firebase config ────────────────────────────────────────────────────────
+
 // ─── Firebase config ────────────────────────────────────────────────────────
 const firebaseConfig = {
   apiKey: "AIzaSyByqr9GCcjQHTCCbhRN8fs7eTOezU1Ldvc",
@@ -354,28 +345,31 @@ function isPoolLocked() { return new Date() >= LOCK_DATE; }
 let ignoreNextRemote = false, saveTimer = null;
 
 // Firebase sync
-poolRef.on('value', snapshot => {
-  if (ignoreNextRemote) { ignoreNextRemote = false; return; }
-  const data = snapshot.val();
-  if (data) {
-    Object.assign(state, data);
-    // Ensure rosters exist (if fresh reset)
-    if (!state.rosters || Object.keys(state.rosters).length === 0) {
+if (poolRef) {
+  poolRef.on('value', snapshot => {
+    if (ignoreNextRemote) { ignoreNextRemote = false; return; }
+    const data = snapshot.val();
+    if (data) {
+      Object.assign(state, data);
+      if (!state.rosters || Object.keys(state.rosters).length === 0) {
+        state.rosters = buildFixedRosters();
+      }
+    } else {
       state.rosters = buildFixedRosters();
+      state.countryStages = {};
+      state.countryWins = {};
+      state.countryDraws = {};
+      state.draftDone = true;
     }
     refreshAllViews();
     setSyncStatus('ok', 'Live — rosters fixed, track tournament');
-  } else {
-    state.rosters = buildFixedRosters();
-    state.countryStages = {};
-    state.countryWins = {};
-    state.countryDraws = {};
-    state.draftDone = true;
-    refreshAllViews();
-    setSyncStatus('ok', 'Ready — fixed rosters loaded');
-  }
-  hideLoading();
-}, err => { setSyncStatus('err', 'Firebase error'); hideLoading(); });
+    hideLoading();
+  }, err => { setSyncStatus('err', 'Firebase error'); hideLoading(); });
+} else {
+  // Firebase unavailable — load locally so the page isn't blank
+  state.rosters = buildFixedRosters();
+  refreshAllViews();
+}
 
 
 function saveToFirebase() {
