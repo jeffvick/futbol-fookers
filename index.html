@@ -206,36 +206,68 @@ const poolRef = db.ref('pool');
 
 // ─── MASTER COUNTRY LIST (48 nations, full FIFA rank) ───────────────────────
 const COUNTRIES = [
-  {name:"Spain", flag:"🇪🇸", rank:2}, {name:"France", flag:"🇫🇷", rank:1}, {name:"Netherlands", flag:"🇳🇱", rank:7},
-  {name:"Germany", flag:"🇩🇪", rank:10}, {name:"England", flag:"🏴󠁧󠁢󠁥󠁮󠁧󠁿", rank:4}, {name:"Portugal", flag:"🇵🇹", rank:5},
-  {name:"Brazil", flag:"🇧🇷", rank:6}, {name:"Morocco", flag:"🇲🇦", rank:8}, {name:"Argentina", flag:"🇦🇷", rank:3},
-  {name:"USA", flag:"🇺🇸", rank:16}, {name:"Belgium", flag:"🇧🇪", rank:9}, {name:"Australia", flag:"🇦🇺", rank:27},
-  {name:"Mexico", flag:"🇲🇽", rank:15}, {name:"Norway", flag:"🇳🇴", rank:32}, {name:"Croatia", flag:"🇭🇷", rank:11},
-  {name:"Colombia", flag:"🇨🇴", rank:13}, {name:"Switzerland", flag:"🇨🇭", rank:19}, {name:"Uruguay", flag:"🇺🇾", rank:17},
-  {name:"Japan", flag:"🇯🇵", rank:18}, {name:"Senegal", flag:"🇸🇳", rank:14}, {name:"South Korea", flag:"🇰🇷", rank:25},
-  {name:"Canada", flag:"🇨🇦", rank:30}, {name:"Ecuador", flag:"🇪🇨", rank:24}, {name:"Türkiye", flag:"🇹🇷", rank:15},
-  {name:"Ivory Coast", flag:"🇨🇮", rank:34}, {name:"Egypt", flag:"🇪🇬", rank:29}, {name:"Austria", flag:"🇦🇹", rank:24},
-  {name:"Iran", flag:"🇮🇷", rank:21}, {name:"Sweden", flag:"🇸🇪", rank:28}, {name:"Czechia", flag:"🇨🇿", rank:36},
-  {name:"Algeria", flag:"🇩🇿", rank:28}, {name:"Saudi Arabia", flag:"🇸🇦", rank:61}, {name:"Scotland", flag:"🏴󠁧󠁢󠁳󠁣󠁴󠁿", rank:43},
-  {name:"Paraguay", flag:"🇵🇾", rank:40}, {name:"Bosnia and Herzegovina", flag:"🇧🇦", rank:74}, {name:"Panama", flag:"🇵🇦", rank:46},
-  {name:"South Africa", flag:"🇿🇦", rank:61}, {name:"Tunisia", flag:"🇹🇳", rank:44}, {name:"New Zealand", flag:"🇳🇿", rank:85},
-  {name:"Ghana", flag:"🇬🇭", rank:74}, {name:"Qatar", flag:"🇶🇦", rank:55}, {name:"Jordan", flag:"🇯🇴", rank:63},
-  {name:"Haiti", flag:"🇭🇹", rank:83}, {name:"Uzbekistan", flag:"🇺🇿", rank:54}, {name:"DR Congo", flag:"🇨🇩", rank:59},
-  {name:"Iraq", flag:"🇮🇶", rank:62}, {name:"Cape Verde", flag:"🇨🇻", rank:68}, {name:"Curaçao", flag:"🇨🇼", rank:82}
+  {name:"Spain", flag:"🇪🇸", rank:2},
+  {name:"France", flag:"🇫🇷", rank:1},
+  {name:"Netherlands", flag:"🇳🇱", rank:7},
+  {name:"Germany", flag:"🇩🇪", rank:10},
+  {name:"England", flag:"🏴󠁧󠁢󠁥󠁮󠁧󠁿", rank:4},
+  {name:"Portugal", flag:"🇵🇹", rank:5},
+  {name:"Brazil", flag:"🇧🇷", rank:6},
+  {name:"Morocco", flag:"🇲🇦", rank:8},
+  {name:"Argentina", flag:"🇦🇷", rank:3},
+  {name:"USA", flag:"🇺🇸", rank:16},
+  {name:"Belgium", flag:"🇧🇪", rank:9},
+  {name:"Australia", flag:"🇦🇺", rank:27},
+  {name:"Mexico", flag:"🇲🇽", rank:15},
+  {name:"Norway", flag:"🇳🇴", rank:32},
+  {name:"Croatia", flag:"🇭🇷", rank:11},
+  {name:"Colombia", flag:"🇨🇴", rank:13},
+  {name:"Switzerland", flag:"🇨🇭", rank:19},
+  {name:"Uruguay", flag:"🇺🇾", rank:17},
+  {name:"Japan", flag:"🇯🇵", rank:18},
+  {name:"Senegal", flag:"🇸🇳", rank:14},
+  {name:"South Korea", flag:"🇰🇷", rank:25},
+  {name:"Canada", flag:"🇨🇦", rank:30},
+  {name:"Ecuador", flag:"🇪🇨", rank:24},
+  {name:"Turkey", flag:"🇹🇷", rank:15},        // Changed from "Türkiye"
+  {name:"Côte d'Ivoire", flag:"🇨🇮", rank:34}, // Changed from "Ivory Coast"
+  {name:"Egypt", flag:"🇪🇬", rank:29},
+  {name:"Austria", flag:"🇦🇹", rank:24},
+  {name:"Iran", flag:"🇮🇷", rank:21},
+  {name:"Sweden", flag:"🇸🇪", rank:28},
+  {name:"Czechia", flag:"🇨🇿", rank:36},
+  {name:"Algeria", flag:"🇩🇿", rank:28},
+  {name:"Saudi Arabia", flag:"🇸🇦", rank:61},
+  {name:"Scotland", flag:"🏴󠁧󠁢󠁳󠁣󠁴󠁿", rank:43},
+  {name:"Paraguay", flag:"🇵🇾", rank:40},
+  {name:"Bosnia and Herzegovina", flag:"🇧🇦", rank:74},
+  {name:"Panama", flag:"🇵🇦", rank:46},
+  {name:"South Africa", flag:"🇿🇦", rank:61},
+  {name:"Tunisia", flag:"🇹🇳", rank:44},
+  {name:"New Zealand", flag:"🇳🇿", rank:85},
+  {name:"Ghana", flag:"🇬🇭", rank:74},
+  {name:"Qatar", flag:"🇶🇦", rank:55},
+  {name:"Jordan", flag:"🇯🇴", rank:63},
+  {name:"Haiti", flag:"🇭🇹", rank:83},
+  {name:"Uzbekistan", flag:"🇺🇿", rank:54},
+  {name:"Congo DR", flag:"🇨🇩", rank:59},    // Changed from "DR Congo"
+  {name:"Iraq", flag:"🇮🇶", rank:62},
+  {name:"Cape Verde", flag:"🇨🇻", rank:68},
+  {name:"Curaçao", flag:"🇨🇼", rank:82}
 ];
 
 const GROUPS_2026 = {
   'A': ['Mexico', 'South Africa', 'South Korea', 'Czechia'],
   'B': ['Canada', 'Bosnia and Herzegovina', 'Qatar', 'Switzerland'],
   'C': ['Brazil', 'Morocco', 'Haiti', 'Scotland'],
-  'D': ['USA', 'Paraguay', 'Australia', 'Türkiye'],
-  'E': ['Germany', "Ivory Coast", 'Ecuador', 'Curaçao'],
+  'D': ['USA', 'Paraguay', 'Australia', 'Turkey'],           // Changed from Türkiye
+  'E': ['Germany', "Côte d'Ivoire", 'Ecuador', 'Curaçao'],  // Changed
   'F': ['Netherlands','Japan', 'Sweden', 'Tunisia'],
   'G': ['Belgium', 'Egypt', 'Iran', 'New Zealand'],
   'H': ['Spain', 'Cape Verde', 'Saudi Arabia','Uruguay'],
   'I': ['France', 'Senegal', 'Iraq', 'Norway'],
   'J': ['Argentina', 'Algeria', 'Austria', 'Jordan'],
-  'K': ['Portugal', 'DR Congo', 'Uzbekistan', 'Colombia'],
+  'K': ['Portugal', 'Congo DR', 'Uzbekistan', 'Colombia'],   // Changed
   'L': ['England', 'Croatia', 'Ghana', 'Panama']
 };
 
@@ -243,10 +275,10 @@ const COLORS = ["#7F77DD","#D4537E","#378ADD","#1D9E75","#D85A30","#639922","#53
 
 // Fixed roster assignment (as per spec)
 const FIXED_ROSTERS = {
-  "kelby":   ["Spain", "Türkiye", "Ivory Coast", "Curaçao"],
+  "kelby":   ["Spain", "Turkey", "Côte d'Ivoire", "Curaçao"],     // Changed
   "vick":    ["France", "Ecuador", "Egypt", "Cape Verde"],
   "andy":    ["Netherlands", "Canada", "Austria", "Iraq"],
-  "hotpot":  ["Germany", "South Korea", "Iran", "DR Congo"],
+  "hotpot":  ["Germany", "South Korea", "Iran", "Congo DR"],       // Changed
   "fonzy":   ["England", "Senegal", "Sweden", "Uzbekistan"],
   "d-cast":  ["Portugal", "Japan", "Czechia", "Haiti"],
   "lucho":   ["Brazil", "Uruguay", "Algeria", "Jordan"],
