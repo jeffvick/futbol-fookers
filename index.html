@@ -370,6 +370,112 @@ function stageCount(key) {
   return count;
 }
 
+function updateMembersFromSetup() {
+  const inputs = document.querySelectorAll('#member-list .member-row input');
+  inputs.forEach((input, idx) => {
+    if (input.value.trim()) {
+      state.members[idx] = input.value.trim();
+    }
+  });
+  // Rebuild rosters with new member names (preserve country assignments)
+  const newRosters = {};
+  for (let i = 0; i < state.members.length; i++) {
+    const oldName = ["andy","d-cast","fonzy","geoff","helen","kelby","lucho","merman","hotpot","trent","vick","weston"][i];
+    const newName = state.members[i];
+    if (state.rosters[oldName]) {
+      newRosters[newName] = state.rosters[oldName];
+    }
+  }
+  state.rosters = newRosters;
+  scheduleSave();
+  refreshAllViews();
+  showToast('Member names updated');
+}
+
+function exportState() {
+  const dataStr = JSON.stringify(state);
+  const code = 'WCPOOL:' + btoa(unescape(encodeURIComponent(dataStr)));
+  navigator.clipboard.writeText(code).then(() => showToast('Backup copied to clipboard!'));
+}
+
+function toggleImport() {
+  const panel = document.getElementById('import-panel');
+  panel.style.display = panel.style.display === 'none' ? 'block' : 'none';
+}
+
+function importState() {
+  const text = document.getElementById('import-text').value.trim();
+  if (!text) return;
+  try {
+    let json = text;
+    if (text.startsWith('WCPOOL:')) {
+      json = decodeURIComponent(escape(atob(text.slice(7))));
+    }
+    const imported = JSON.parse(json);
+    Object.assign(state, imported);
+    document.getElementById('import-panel').style.display = 'none';
+    document.getElementById('import-text').value = '';
+    scheduleSave();
+    refreshAllViews();
+    showToast('Backup restored successfully!');
+  } catch(e) {
+    showToast('Invalid backup code');
+  }
+}
+
+function resetPool() {
+  if (isPoolLocked() && !confirm('Pool is locked. Reset anyway?')) return;
+  if (!confirm('⚠️ Reset all data for ALL members? This cannot be undone!')) return;
+  state.rosters = buildFixedRosters();
+  state.countryStages = {};
+  state.countryWins = {};
+  state.countryDraws = {};
+  state.draftDone = true;
+  state.members = ["andy","d-cast","fonzy","geoff","helen","kelby","lucho","merman","hotpot","trent","vick","weston"];
+  scheduleSave();
+  refreshAllViews();
+  showToast('Pool reset to initial state');
+}
+  
+function initMembers() {
+  const container = document.getElementById('member-list');
+  if (!container) return;
+  container.innerHTML = '';
+  state.members.forEach((member, idx) => {
+    const row = document.createElement('div');
+    row.className = 'member-row';
+    row.innerHTML = `
+      <div class="dot-badge" style="background:${COLORS[idx]}22;color:${COLORS[idx]}">${idx+1}</div>
+      <input type="text" value="${member}" placeholder="Member ${idx+1}" data-idx="${idx}">
+    `;
+    const input = row.querySelector('input');
+    input.addEventListener('change', (e) => {
+      state.members[idx] = e.target.value || `Member ${idx+1}`;
+      scheduleSave();
+    });
+    container.appendChild(row);
+  });
+}
+
+function refreshAllViews() {
+  initMembers();
+  renderRosters();
+  renderTournament();
+  renderLeaderboard();
+}
+
+function showTab(tabName) {
+  document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+  document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+  document.getElementById(`tab-${tabName}`).classList.add('active');
+  event.target.classList.add('active');
+  
+  if (tabName === 'rosters') renderRosters();
+  if (tabName === 'tournament') renderTournament();
+  if (tabName === 'leaderboard') renderLeaderboard();
+}  
+  
+  
 function recordAdvance(name, stage) {
   if (!state.countryStages[name]) state.countryStages[name] = [];
   const already = state.countryStages[name].includes(stage);
@@ -388,4 +494,5 @@ function recordAdvance(name, stage) {
     }
     showToast(`${name} removed from ${stageDef.label}`);
   }
-  scheduleSave(); renderTournament(); renderRosters(); renderLeaderboard
+    scheduleSave(); renderTournament(); renderRosters(); renderLeaderboard();
+}
