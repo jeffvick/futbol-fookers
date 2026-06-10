@@ -200,6 +200,7 @@ if (typeof firebase === 'undefined') {
 }
 // ─── Firebase config ────────────────────────────────────────────────────────
 // ─── Firebase config ────────────────────────────────────────────────────────
+// ─── Firebase config ────────────────────────────────────────────────────────
 const firebaseConfig = {
   apiKey: "AIzaSyByqr9GCcjQHTCCbhRN8fs7eTOezU1Ldvc",
   authDomain: "fifa-world-fuck.firebaseapp.com",
@@ -215,19 +216,25 @@ let db, poolRef;
 // Initialize Firebase with error handling
 try {
   if (typeof firebase === 'undefined') {
-    throw new Error("Firebase SDK not loaded");
+    throw new Error("Firebase SDK not loaded - check script tags");
   }
   firebase.initializeApp(firebaseConfig);
   db = firebase.database();
   poolRef = db.ref('pool');
-  console.log("✅ Firebase initialized");
+  console.log("✅ Firebase initialized successfully");
 } catch (error) {
   console.error("❌ Firebase init error:", error);
   document.getElementById('sync-label').textContent = 'Firebase error: ' + error.message;
   document.getElementById('loading-overlay').classList.add('hidden');
 }
 
-// Connection monitor (only ONE)
+
+  
+function setSyncStatus(status, msg) { document.getElementById('sync-dot').className = 'sync-dot' + (status ? ' ' + status : ''); document.getElementById('sync-label').textContent = msg; }
+
+function showToast(msg) { const t = document.getElementById('toast'); t.textContent = msg; t.classList.add('show'); clearTimeout(t._tid); t._tid = setTimeout(() => t.classList.remove('show'), 2800); }
+  
+// Connection monitor
 if (db) {
   db.ref('.info/connected').on('value', snap => {
     if (snap.val()) {
@@ -245,12 +252,12 @@ if (db) {
 setTimeout(() => {
   const overlay = document.getElementById('loading-overlay');
   if (overlay && !overlay.classList.contains('hidden')) {
-    console.warn("⚠️ Loading timeout");
+    console.warn("⚠️ Loading timeout - forcing hide");
     overlay.classList.add('hidden');
     setSyncStatus('err', 'Connection timeout');
   }
 }, 5000);
-
+  
 // ─── MASTER COUNTRY LIST (48 nations, full FIFA rank) ───────────────────────
 const COUNTRIES = [
   {name:"Spain", flag:"🇪🇸", rank:2}, {name:"France", flag:"🇫🇷", rank:1}, {name:"Netherlands", flag:"🇳🇱", rank:7},
@@ -323,9 +330,6 @@ let state = {
   draftDone: true   // draft is always done because rosters are fixed
 };
 
-function setSyncStatus(status, msg) { document.getElementById('sync-dot').className = 'sync-dot' + (status ? ' ' + status : ''); document.getElementById('sync-label').textContent = msg; }
-
-function showToast(msg) { const t = document.getElementById('toast'); t.textContent = msg; t.classList.add('show'); clearTimeout(t._tid); t._tid = setTimeout(() => t.classList.remove('show'), 2800); }
   
   
 // Helper to initialize rosters from fixed assignments
