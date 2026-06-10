@@ -1,423 +1,57 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>⚽ FIFA World Fuck Pool Party ⚽</title>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500&family=DM+Mono&display=swap">
-<style>
-  :root {
-    --bg:#ffffff;--bg2:#f5f5f3;--bg3:#eeede9;--text:#1a1a18;--text2:#6b6b67;--text3:#9e9e99;
-    --border:rgba(0,0,0,0.12);--border2:rgba(0,0,0,0.22);
-    --info-bg:#e6f1fb;--info-text:#185fa5;--info-border:rgba(24,95,165,0.3);
-    --success-bg:#eaf3de;--success-text:#3b6d11;--success-border:rgba(59,109,17,0.3);
-    --warn-bg:#faeeda;--warn-text:#854f0b;
-    --radius:8px;--radius-lg:12px;
-  }
-  @media(prefers-color-scheme:dark){
-    :root{--bg:#1c1c1a;--bg2:#252522;--bg3:#2e2e2b;--text:#f0efe8;--text2:#9e9e99;--text3:#6b6b67;
-    --border:rgba(255,255,255,0.1);--border2:rgba(255,255,255,0.2);
-    --info-bg:#042c53;--info-text:#85b7eb;--info-border:rgba(133,183,235,0.3);
-    --success-bg:#173404;--success-text:#c0dd97;--success-border:rgba(192,221,151,0.3);
-    --warn-bg:#412402;--warn-text:#fac775;}
-  }
-  *{box-sizing:border-box;margin:0;padding:0}
-  body{font-family:'DM Sans',system-ui,sans-serif;background:var(--bg3);color:var(--text);min-height:100vh}
-  .page{max-width:960px;margin:0 auto;padding:2rem 1rem 4rem}
-  .header{text-align:center;margin-bottom:2rem}
-  .header h1{font-size:28px;font-weight:500;letter-spacing:-0.5px}
-  .header p{font-size:14px;color:var(--text2);margin-top:6px}
-  .sync-bar{display:flex;align-items:center;gap:8px;font-size:12px;color:var(--text3);padding:8px 14px;background:var(--bg);border:0.5px solid var(--border);border-radius:var(--radius);margin-bottom:1rem;flex-wrap:wrap}
-  .sync-dot{width:7px;height:7px;border-radius:50%;background:var(--text3);flex-shrink:0;transition:background 0.3s}
-  .sync-dot.ok{background:#1d9e75}.sync-dot.saving{background:#ba7517;animation:pulse 0.8s infinite}.sync-dot.err{background:#e24b4a}.sync-dot.connecting{background:#ba7517;animation:pulse 0.6s infinite}
-  @keyframes pulse{0%,100%{opacity:1}50%{opacity:0.35}}
-  .toolbar{margin-left:auto;display:flex;gap:6px;flex-wrap:wrap}
-  .btn-icon{background:none;border:0.5px solid var(--border2);padding:5px 12px;border-radius:var(--radius);font-size:12px;cursor:pointer;color:var(--text2);font-family:inherit;transition:all 0.1s;display:inline-flex;align-items:center;gap:5px}
-  .btn-icon:hover{background:var(--bg2);color:var(--text)}
-  .tabs{display:flex;gap:2px;border-bottom:0.5px solid var(--border);margin-bottom:1.5rem;overflow-x:auto}
-  .tab{padding:9px 16px;font-size:13px;cursor:pointer;border:none;background:none;color:var(--text2);border-bottom:2px solid transparent;margin-bottom:-1px;white-space:nowrap;font-family:inherit;transition:all 0.15s}
-  .tab.active{color:var(--text);border-bottom-color:var(--text);font-weight:500}
-  .section{display:none}.section.active{display:block}
-  .setup-grid{display:grid;grid-template-columns:1fr 1fr;gap:1rem}
-  @media(max-width:600px){.setup-grid{grid-template-columns:1fr}}
-  .card{background:var(--bg);border:0.5px solid var(--border);border-radius:var(--radius-lg);padding:1rem 1.25rem}
-  .card-title{font-size:11px;font-weight:500;color:var(--text2);margin-bottom:12px;text-transform:uppercase;letter-spacing:0.07em}
-  .member-list{display:flex;flex-direction:column;gap:6px}
-  .member-row{display:flex;gap:8px;align-items:center}
-  .member-row input{flex:1;font-size:13px;padding:7px 10px;border:0.5px solid var(--border);border-radius:var(--radius);background:var(--bg);color:var(--text);font-family:inherit;outline:none;transition:border-color 0.15s}
-  .member-row input:focus{border-color:var(--border2)}
-  .dot-badge{width:22px;height:22px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:500;flex-shrink:0}
-  .scoring-row{display:flex;justify-content:space-between;align-items:center;padding:6px 0;border-bottom:0.5px solid var(--border);font-size:13px}
-  .scoring-row:last-child{border-bottom:none}
-  .scoring-row .stage{color:var(--text2)}
-  .pts-row{display:flex;gap:6px;align-items:center}
-  .tag{font-size:11px;padding:2px 7px;border-radius:4px;font-weight:500}
-  .tag-warn{background:var(--warn-bg);color:var(--warn-text)}
-  .mult-badge{display:inline-block;padding:2px 6px;border-radius:4px;font-size:10px;font-weight:500}
-  .m1{background:var(--bg2);color:var(--text2)}.m2{background:#eaf3de;color:#3b6d11}.m3{background:#e6f1fb;color:#185fa5}.m4{background:#faeeda;color:#854f0b}.m5{background:#fbeaf0;color:#993556}
-  @media(prefers-color-scheme:dark){.m2{background:#173404;color:#c0dd97}.m3{background:#042c53;color:#85b7eb}.m4{background:#412402;color:#fac775}.m5{background:#4b1528;color:#f4c0d1}}
-  .btn-primary{background:var(--text);color:var(--bg);border:none;padding:10px 24px;border-radius:var(--radius);font-size:14px;font-weight:500;cursor:pointer;width:100%;margin-top:1rem;font-family:inherit;transition:opacity 0.15s}
-  .btn-primary:hover{opacity:0.82}
-  .btn-secondary{background:none;border:0.5px solid var(--border2);padding:8px 16px;border-radius:var(--radius);font-size:13px;cursor:pointer;color:var(--text);width:100%;margin-top:8px;font-family:inherit;display:flex;align-items:center;justify-content:center;gap:6px;transition:background 0.1s}
-  .btn-secondary:hover{background:var(--bg2)}
-  .order-preview{margin-top:14px;border-top:0.5px solid var(--border);padding-top:12px}
-  .order-chips{display:flex;flex-direction:column;gap:4px;max-height:200px;overflow-y:auto}
-  .order-chip{display:flex;align-items:center;gap:8px;font-size:12px;padding:4px 6px;border-radius:6px}
-  .draft-stats{display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px;margin-bottom:1rem}
-  .stat-box{background:var(--bg2);border-radius:var(--radius);padding:10px 14px}
-  .stat-box .slabel{font-size:11px;color:var(--text3);text-transform:uppercase;letter-spacing:0.05em}
-  .stat-box .sval{font-size:22px;font-weight:500;margin-top:2px}
-  .done-banner{background:var(--success-bg);border:0.5px solid var(--success-border);color:var(--success-text);border-radius:var(--radius);padding:10px 16px;font-size:13px;font-weight:500;margin-bottom:12px;display:none}
-  .rosters-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:10px}
-  .roster-card{background:var(--bg);border:0.5px solid var(--border);border-radius:var(--radius-lg);padding:12px}
-  .roster-team{display:flex;align-items:center;gap:6px;padding:4px 0;font-size:12px;border-bottom:0.5px solid var(--border)}
-  .roster-team:last-child{border-bottom:none}
-  .round-label{font-size:11px;color:var(--text3);text-transform:uppercase;letter-spacing:0.07em;margin:16px 0 6px}
-  .matches-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(255px,1fr));gap:8px}
-  .match-card{background:var(--bg);border:0.5px solid var(--border);border-radius:var(--radius);padding:10px 12px}
-  .lb-table{width:100%;border-collapse:collapse;font-size:13px}
-  .lb-table th{text-align:left;padding:8px 10px;border-bottom:0.5px solid var(--border);font-weight:500;font-size:11px;color:var(--text2);text-transform:uppercase;letter-spacing:0.05em}
-  .lb-table td{padding:8px 10px;border-bottom:0.5px solid var(--border)}
-  .lb-table tr:last-child td{border-bottom:none}
-  .bar-wrap{height:6px;background:var(--bg2);border-radius:3px;margin-top:3px}
-  .bar-fill{height:6px;border-radius:3px;transition:width 0.4s}
-  .match-team-row{display:flex;align-items:center;gap:8px;font-size:13px;margin:5px 0;flex-wrap:wrap}
-  .kbtn{font-size:10px;padding:2px 6px;border:0.5px solid var(--border);border-radius:3px;cursor:pointer;font-family:inherit;transition:all 0.1s}
-  .adv-btn{font-size:11px;padding:3px 10px;border:0.5px solid var(--border);border-radius:4px;cursor:pointer;font-family:inherit;background:none;color:var(--text2);transition:all 0.1s}
-  .adv-btn:hover{background:var(--bg2)}
-  .adv-btn.done{background:var(--success-bg);color:var(--success-text);border-color:var(--success-border)}
-  .toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%);background:var(--text);color:var(--bg);padding:9px 18px;border-radius:var(--radius);font-size:13px;font-weight:500;opacity:0;transition:opacity 0.2s;pointer-events:none;z-index:100;white-space:nowrap}
-  .toast.show{opacity:1}
-  .loading-overlay{position:fixed;inset:0;background:var(--bg3);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:12px;z-index:200;transition:opacity 0.3s}
-  .loading-overlay.hidden{opacity:0;pointer-events:none}
-  .spinner{width:32px;height:32px;border:2.5px solid var(--border);border-top-color:var(--text2);border-radius:50%;animation:spin 0.7s linear infinite}
-  @keyframes spin{to{transform:rotate(360deg)}}
-  .info-note{background:var(--info-bg);border:1px solid var(--info-border);border-radius:var(--radius);padding:10px 14px;margin-bottom:16px;font-size:12px;color:var(--info-text)}
-</style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Firebase Minimal Test</title>
 </head>
 <body>
+    <h1>Firebase Minimal Test</h1>
+    <p id="status">Initializing Firebase...</p>
 
-<div class="loading-overlay" id="loading-overlay">
-  <div style="font-size:28px">⚽</div>
-  <div class="spinner"></div>
-  <div style="font-size:13px;color:var(--text2)">Connecting to pool...</div>
-</div>
+    <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-database-compat.js"></script>
 
-<div class="page">
-  <div class="toast" id="toast"></div>
+    <script>
+        // Your Firebase config
+        const firebaseConfig = {
+            apiKey: "AIzaSyByqr9GCcjQHTCCbhRN8fs7eTOezU1Ldvc",
+            authDomain: "fifa-world-fuck.firebaseapp.com",
+            databaseURL: "https://fifa-world-fuck-default-rtdb.firebaseio.com",
+            projectId: "fifa-world-fuck",
+            storageBucket: "fifa-world-fuck.firebasestorage.app",
+            messagingSenderId: "839702256039",
+            appId: "1:839702256039:web:e342e3b66fe1e331107e82"
+        };
 
-  <div class="header">
-    <h1>FIFA World Cup<br>⚽ Pool Party ⚽</h1>
-    <p>Pre‑assigned rosters · 48 countries · 12 fuckers · weighted underdog scoring</p>
-  </div>
+        // Initialize Firebase
+        firebase.initializeApp(firebaseConfig);
+        const db = firebase.database();
+        const statusElement = document.getElementById('status');
 
-  <div class="sync-bar">
-    <span class="sync-dot connecting" id="sync-dot"></span>
-    <span id="sync-label">Connecting to Firebase...</span>
-    <div class="toolbar">
-      <button class="btn-icon" onclick="exportState()">↓ Export backup</button>
-      <button class="btn-icon" onclick="toggleImport()">↑ Import backup</button>
-      <button class="btn-icon" onclick="resetPool()" style="color:#e24b4a">✕ Reset</button>
-    </div>
-  </div>
+        statusElement.textContent = "Firebase initialized.";
 
-  <div id="import-panel" style="display:none;margin-bottom:1rem">
-    <div class="card">
-      <div class="card-title">Import backup</div>
-      <p style="font-size:12px;color:var(--text2);margin-bottom:8px">Restore a pool from an exported backup code.</p>
-      <textarea id="import-text" style="width:100%;min-height:80px;font-size:12px;font-family:'DM Mono',monospace;border:0.5px solid var(--border);border-radius:var(--radius);padding:8px;background:var(--bg2);color:var(--text)" placeholder="Paste WCPOOL:... code here"></textarea>
-      <div style="display:flex;gap:8px;margin-top:8px">
-        <button class="btn-secondary" style="margin-top:0" onclick="importState()">Load backup</button>
-        <button class="btn-secondary" style="margin-top:0" onclick="toggleImport()">Cancel</button>
-      </div>
-    </div>
-  </div>
+        // Test Realtime Database connection by listening to a path
+        // We'll listen to your 'pool' ref, but not process any data to keep it minimal.
+        const poolRef = db.ref('pool');
+        poolRef.on('value', snapshot => {
+            statusElement.textContent = "Firebase Realtime Database connected and received data (or null).";
+            console.log("Firebase Realtime Database data received:", snapshot.val());
+        }, error => {
+            statusElement.textContent = `Firebase Realtime Database error: ${error.message}`;
+            console.error("Firebase Realtime Database Error:", error);
+        });
 
-  <div class="tabs">
-    <button class="tab active" onclick="showTab('rosters')">Rosters</button>
-    <button class="tab" onclick="showTab('tournament')">Tournament</button>
-    <button class="tab" onclick="showTab('leaderboard')">Leaderboard</button>
-    <button class="tab" onclick="showTab('setup')">Settings</button>
-  </div>
+        // Also listen for connection status to Firebase
+        db.ref('.info/connected').on('value', snap => {
+            if (snap.val()) {
+                console.log("Connected to Firebase.");
+            } else {
+                console.warn("Disconnected from Firebase.");
+            }
+        });
 
-  <!-- ROSTERS (main tab) -->
-  <div id="tab-rosters" class="section active">
-    <div class="info-note">
-      ⚡ Rosters pre‑assigned per your list. No draft needed — track group & knockout results below.
-    </div>
-    <div class="rosters-grid" id="rosters-grid"></div>
-  </div>
-
-  <!-- TOURNAMENT -->
-  <div id="tab-tournament" class="section">
-    <div class="info-note">
-      🏆 Track wins/draws and knockout advances. Scores update automatically using multipliers.
-    </div>
-    <div id="tournament-content"></div>
-  </div>
-
-  <!-- LEADERBOARD -->
-  <div id="tab-leaderboard" class="section">
-    <div id="lb-content"></div>
-  </div>
-
-  <!-- SETUP (minimal, no draft controls) -->
-  <div id="tab-setup" class="section">
-    <div class="setup-grid">
-      <div class="card">
-        <div class="card-title">Pool members</div>
-        <div class="member-list" id="member-list"></div>
-        <button class="btn-primary" onclick="updateMembersFromSetup()">Save member names</button>
-        <p style="font-size:11px;margin-top:12px;color:var(--text3)">Draft is disabled — rosters are fixed per commissioner assignment.</p>
-      </div>
-      <div class="card">
-        <div class="card-title">Scoring system</div>
-        <div class="scoring-row"><span class="stage">Group stage win</span><div class="pts-row"><span>3 pts</span></div></div>
-        <div class="scoring-row"><span class="stage">Group stage draw</span><div class="pts-row"><span>1 pt</span></div></div>
-        <div class="scoring-row"><span class="stage">Round of 32</span><div class="pts-row"><span>4 pts</span><span class="tag tag-warn">+ mult</span></div></div>
-        <div class="scoring-row"><span class="stage">Round of 16</span><div class="pts-row"><span>6 pts</span><span class="tag tag-warn">+ mult</span></div></div>
-        <div class="scoring-row"><span class="stage">Quarter-final</span><div class="pts-row"><span>8 pts</span><span class="tag tag-warn">+ mult</span></div></div>
-        <div class="scoring-row"><span class="stage">Semi-final</span><div class="pts-row"><span>12 pts</span><span class="tag tag-warn">+ mult</span></div></div>
-        <div class="scoring-row"><span class="stage">Runner-up</span><div class="pts-row"><span>16 pts</span><span class="tag tag-warn">+ mult</span></div></div>
-        <div class="scoring-row"><span class="stage">Champion</span><div class="pts-row"><span>25 pts</span><span class="tag tag-warn">+ mult</span></div></div>
-      </div>
-    </div>
-  </div>
-</div>
-
-<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-database-compat.js"></script>
-
-<script>
-// ─── Firebase config ────────────────────────────────────────────────────────
-const firebaseConfig = {
-  apiKey: "AIzaSyByqr9GCcjQHTCCbhRN8fs7eTOezU1Ldvc",
-  authDomain: "fifa-world-fuck.firebaseapp.com",
-  databaseURL: "https://fifa-world-fuck-default-rtdb.firebaseio.com",
-  projectId: "fifa-world-fuck",
-  storageBucket: "fifa-world-fuck.firebasestorage.app",
-  messagingSenderId: "839702256039",
-  appId: "1:839702256039:web:e342e3b66fe1e331107e82"
-};
-
-firebase.initializeApp(firebaseConfig);
-const db = firebase.database();
-const poolRef = db.ref('pool');
-
-// ─── MASTER COUNTRY LIST (48 nations, full FIFA rank) ───────────────────────
-const COUNTRIES = [
-  {name:"Spain", flag:"🇪🇸", rank:2},
-  {name:"France", flag:"🇫🇷", rank:1},
-  {name:"Netherlands", flag:"🇳🇱", rank:7},
-  {name:"Germany", flag:"🇩🇪", rank:10},
-  {name:"England", flag:"🏴󠁧󠁢󠁥󠁮󠁧󠁿", rank:4},
-  {name:"Portugal", flag:"🇵🇹", rank:5},
-  {name:"Brazil", flag:"🇧🇷", rank:6},
-  {name:"Morocco", flag:"🇲🇦", rank:8},
-  {name:"Argentina", flag:"🇦🇷", rank:3},
-  {name:"USA", flag:"🇺🇸", rank:16},
-  {name:"Belgium", flag:"🇧🇪", rank:9},
-  {name:"Australia", flag:"🇦🇺", rank:27},
-  {name:"Mexico", flag:"🇲🇽", rank:15},
-  {name:"Norway", flag:"🇳🇴", rank:32},
-  {name:"Croatia", flag:"🇭🇷", rank:11},
-  {name:"Colombia", flag:"🇨🇴", rank:13},
-  {name:"Switzerland", flag:"🇨🇭", rank:19},
-  {name:"Uruguay", flag:"🇺🇾", rank:17},
-  {name:"Japan", flag:"🇯🇵", rank:18},
-  {name:"Senegal", flag:"🇸🇳", rank:14},
-  {name:"South Korea", flag:"🇰🇷", rank:25},
-  {name:"Canada", flag:"🇨🇦", rank:30},
-  {name:"Ecuador", flag:"🇪🇨", rank:24},
-  {name:"Turkey", flag:"🇹🇷", rank:15},        // Changed from "Türkiye"
-  {name:"Côte d'Ivoire", flag:"🇨🇮", rank:34}, // Changed from "Ivory Coast"
-  {name:"Egypt", flag:"🇪🇬", rank:29},
-  {name:"Austria", flag:"🇦🇹", rank:24},
-  {name:"Iran", flag:"🇮🇷", rank:21},
-  {name:"Sweden", flag:"🇸🇪", rank:28},
-  {name:"Czechia", flag:"🇨🇿", rank:36},
-  {name:"Algeria", flag:"🇩🇿", rank:28},
-  {name:"Saudi Arabia", flag:"🇸🇦", rank:61},
-  {name:"Scotland", flag:"🏴󠁧󠁢󠁳󠁣󠁴󠁿", rank:43},
-  {name:"Paraguay", flag:"🇵🇾", rank:40},
-  {name:"Bosnia and Herzegovina", flag:"🇧🇦", rank:74},
-  {name:"Panama", flag:"🇵🇦", rank:46},
-  {name:"South Africa", flag:"🇿🇦", rank:61},
-  {name:"Tunisia", flag:"🇹🇳", rank:44},
-  {name:"New Zealand", flag:"🇳🇿", rank:85},
-  {name:"Ghana", flag:"🇬🇭", rank:74},
-  {name:"Qatar", flag:"🇶🇦", rank:55},
-  {name:"Jordan", flag:"🇯🇴", rank:63},
-  {name:"Haiti", flag:"🇭🇹", rank:83},
-  {name:"Uzbekistan", flag:"🇺🇿", rank:54},
-  {name:"Congo DR", flag:"🇨🇩", rank:59},    // Changed from "DR Congo"
-  {name:"Iraq", flag:"🇮🇶", rank:62},
-  {name:"Cape Verde", flag:"🇨🇻", rank:68},
-  {name:"Curaçao", flag:"🇨🇼", rank:82}
-];
-
-const GROUPS_2026 = {
-  'A': ['Mexico', 'South Africa', 'South Korea', 'Czechia'],
-  'B': ['Canada', 'Bosnia and Herzegovina', 'Qatar', 'Switzerland'],
-  'C': ['Brazil', 'Morocco', 'Haiti', 'Scotland'],
-  'D': ['USA', 'Paraguay', 'Australia', 'Turkey'],           // Changed from Türkiye
-  'E': ['Germany', "Côte d'Ivoire", 'Ecuador', 'Curaçao'],  // Changed
-  'F': ['Netherlands','Japan', 'Sweden', 'Tunisia'],
-  'G': ['Belgium', 'Egypt', 'Iran', 'New Zealand'],
-  'H': ['Spain', 'Cape Verde', 'Saudi Arabia','Uruguay'],
-  'I': ['France', 'Senegal', 'Iraq', 'Norway'],
-  'J': ['Argentina', 'Algeria', 'Austria', 'Jordan'],
-  'K': ['Portugal', 'Congo DR', 'Uzbekistan', 'Colombia'],   // Changed
-  'L': ['England', 'Croatia', 'Ghana', 'Panama']
-};
-
-const COLORS = ["#7F77DD","#D4537E","#378ADD","#1D9E75","#D85A30","#639922","#534AB7","#BA7517","#E24B4A","#0F6E56","#993C1D","#185FA5"];
-
-// Fixed roster assignment (as per spec)
-const FIXED_ROSTERS = {
-  "kelby":   ["Spain", "Turkey", "Côte d'Ivoire", "Curaçao"],     // Changed
-  "vick":    ["France", "Ecuador", "Egypt", "Cape Verde"],
-  "andy":    ["Netherlands", "Canada", "Austria", "Iraq"],
-  "hotpot":  ["Germany", "South Korea", "Iran", "Congo DR"],       // Changed
-  "fonzy":   ["England", "Senegal", "Sweden", "Uzbekistan"],
-  "d-cast":  ["Portugal", "Japan", "Czechia", "Haiti"],
-  "lucho":   ["Brazil", "Uruguay", "Algeria", "Jordan"],
-  "trent":   ["Morocco", "Switzerland", "Saudi Arabia", "Qatar"],
-  "geoff":   ["Argentina", "Colombia", "Scotland", "Ghana"],
-  "merman":  ["USA", "Croatia", "Paraguay", "New Zealand"],
-  "weston":  ["Belgium", "Norway", "Bosnia and Herzegovina", "Tunisia"],
-  "helen":   ["Australia", "Mexico", "Panama", "South Africa"]
-};
-
-const STAGE_PTS = {r32:4, r16:6, qf:8, sf:12, runner_up:16, champion:25};
-const KNOCKOUT_STAGES = [
-  {key:'r32', label:'Round of 32', cap:16, prev:null},
-  {key:'r16', label:'Round of 16', cap:8, prev:'r32'},
-  {key:'qf', label:'Quarter-finals', cap:4, prev:'r16'},
-  {key:'sf', label:'Semi-finals', cap:2, prev:'qf'},
-  {key:'runner_up', label:'Runner-up', cap:1, prev:'sf'},
-  {key:'champion', label:'Champion', cap:1, prev:'sf'}
-];
-
-let state = {
-  members: ["andy","d-cast","fonzy","geoff","helen","kelby","lucho","merman","hotpot","trent","vick","weston"],
-  rosters: {},
-  countryStages: {},
-  countryWins: {},
-  countryDraws: {},
-  draftDone: true   // draft is always done because rosters are fixed
-};
-
-// Helper to initialize rosters from fixed assignments
-function buildFixedRosters() {
-  let rosters = {};
-  for (let member of state.members) {
-    let lower = member.toLowerCase();
-    let countries = FIXED_ROSTERS[lower] || [];
-    rosters[member] = countries.map(cname => {
-      let found = COUNTRIES.find(c => c.name === cname);
-      if (!found) console.warn("Missing country:", cname);
-      return found || {name:cname, flag:"🏁", rank:99};
-    });
-  }
-  return rosters;
-}
-
-// Lock after June 11 2026 (same as original)
-const LOCK_DATE = new Date(2026, 5, 11);
-function isPoolLocked() { return new Date() >= LOCK_DATE; }
-
-let ignoreNextRemote = false, saveTimer = null;
-
-// Firebase sync
-poolRef.on('value', snapshot => {
-  if (ignoreNextRemote) { ignoreNextRemote = false; return; }
-  const data = snapshot.val();
-  if (data) {
-    Object.assign(state, data);
-    // Ensure rosters exist (if fresh reset)
-    if (!state.rosters || Object.keys(state.rosters).length === 0) {
-      state.rosters = buildFixedRosters();
-    }
-    refreshAllViews();
-    setSyncStatus('ok', 'Live — rosters fixed, track tournament');
-  } else {
-    state.rosters = buildFixedRosters();
-    state.countryStages = {};
-    state.countryWins = {};
-    state.countryDraws = {};
-    state.draftDone = true;
-    refreshAllViews();
-    setSyncStatus('ok', 'Ready — fixed rosters loaded');
-  }
-  hideLoading();
-}, err => { setSyncStatus('err', 'Firebase error'); hideLoading(); });
-
-db.ref('.info/connected').on('value', snap => {
-  if (snap.val()) setSyncStatus('ok', 'Live — changes sync');
-  else setSyncStatus('err', 'Offline');
-});
-
-function saveToFirebase() {
-  setSyncStatus('saving', 'Saving...');
-  ignoreNextRemote = true;
-  poolRef.set(state).then(() => setSyncStatus('ok', 'Saved')).catch(e => { setSyncStatus('err', 'Save failed'); ignoreNextRemote = false; });
-}
-function scheduleSave() { clearTimeout(saveTimer); setSyncStatus('saving', 'Saving...'); saveTimer = setTimeout(saveToFirebase, 500); }
-function hideLoading() { document.getElementById('loading-overlay').classList.add('hidden'); setTimeout(() => document.getElementById('loading-overlay').style.display = 'none', 350); }
-function setSyncStatus(status, msg) { document.getElementById('sync-dot').className = 'sync-dot' + (status ? ' ' + status : ''); document.getElementById('sync-label').textContent = msg; }
-
-function showToast(msg) { const t = document.getElementById('toast'); t.textContent = msg; t.classList.add('show'); clearTimeout(t._tid); t._tid = setTimeout(() => t.classList.remove('show'), 2800); }
-
-function getMultiplier(rank) { return rank <= 10 ? 1 : rank <= 20 ? 1.25 : rank <= 35 ? 1.5 : 2.0; }
-function multClass(rank) { return rank <= 10 ? 'm1' : rank <= 20 ? 'm2' : rank <= 35 ? 'm3' : 'm4'; }
-function multLabel(rank) { return rank <= 10 ? '×1' : rank <= 20 ? '×1.25' : rank <= 35 ? '×1.5' : '×2'; }
-
-function getGroupWins(name)  { return state.countryWins?.[name] || 0; }
-function getGroupDraws(name) { return state.countryDraws?.[name] || 0; }
-function setGroupWins(name, n) { if (!state.countryWins) state.countryWins = {}; state.countryWins[name] = Math.min(3, Math.max(0, n)); scheduleSave(); renderTournament(); renderRosters(); renderLeaderboard(); }
-function setGroupDraws(name, n) { if (!state.countryDraws) state.countryDraws = {}; state.countryDraws[name] = Math.min(3, Math.max(0, n)); scheduleSave(); renderTournament(); renderRosters(); renderLeaderboard(); }
-function incrementGroupWin(name) { setGroupWins(name, getGroupWins(name)+1); }
-function decrementGroupWin(name) { setGroupWins(name, getGroupWins(name)-1); }
-function incrementGroupDraw(name) { setGroupDraws(name, getGroupDraws(name)+1); }
-function decrementGroupDraw(name) { setGroupDraws(name, getGroupDraws(name)-1); }
-
-function calcCountryScore(name) {
-  const c = COUNTRIES.find(x => x.name === name);
-  if (!c) return 0;
-  const mult = getMultiplier(c.rank);
-  let pts = getGroupWins(name) * 3 + getGroupDraws(name) * 1;
-  (state.countryStages[name] || []).forEach(s => {
-    const base = STAGE_PTS[s] || 0;
-    pts += Math.round(base * mult);
-    if (s === 'champion') pts += Math.round(c.rank * 0.1 * base);
-  });
-  return pts;
-}
-function calcMemberScore(m) { return (state.rosters[m] || []).reduce((sum, t) => sum + calcCountryScore(t.name), 0); }
-
-function stageCount(key) {
-  let count = 0;
-  for (let c of COUNTRIES) if ((state.countryStages[c.name] || []).includes(key)) count++;
-  return count;
-}
-
-function recordAdvance(name, stage) {
-  if (!state.countryStages[name]) state.countryStages[name] = [];
-  const already = state.countryStages[name].includes(stage);
-  const stageDef = KNOCKOUT_STAGES.find(s => s.key === stage);
-  if (!already) {
-    if (stageDef.prev && !state.countryStages[name].includes(stageDef.prev)) { showToast(`${name} must advance from ${stageDef.prev} first`); return; }
-    if (stageCount(stage) >= stageDef.cap) { showToast(`Max ${stageDef.cap} teams for ${stageDef.label}`); return; }
-    state.countryStages[name].push(stage);
-    showToast(`${name} advanced to ${stageDef.label}`);
-  } else {
-    const order = KNOCKOUT_STAGES.map(s => s.key);
-    const idx = order.indexOf(stage);
-    for (let i = idx; i < order.length; i++) {
-      let rmIdx = state.countryStages[name].indexOf(order[i]);
-      if (rmIdx !== -1) state.countryStages[name].splice(rmIdx, 1);
-    }
-    showToast(`${name} removed from ${stageDef.label}`);
-  }
-  scheduleSave(); renderTournament(); renderRosters(); renderLeaderboard
+        console.log("Script execution finished.");
+    </script>
+</body>
+</html>
