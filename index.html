@@ -475,6 +475,131 @@ function showTab(tabName) {
   if (tabName === 'leaderboard') renderLeaderboard();
 }  
   
+function renderRosters() {
+  const grid = document.getElementById('rosters-grid');
+  if (!grid) return;
+  grid.innerHTML = '';
+  state.members.forEach((m, i) => {
+    const teams = state.rosters[m] || [];
+    const score = calcMemberScore(m);
+    const card = document.createElement('div');
+    card.className = 'roster-card';
+    card.innerHTML = `<div style="display:flex;align-items:center;gap:8px;margin-bottom:10px">
+      <span style="width:10px;height:10px;border-radius:50%;background:${COLORS[i]};display:inline-block"></span>
+      <span style="flex:1;font-weight:500">${m}</span>
+      <span style="color:var(--info-text);font-weight:500">${score} pts</span>
+    </div>` +
+    teams.map(t => {
+      const pts = calcCountryScore(t.name);
+      return `<div class="roster-team"><span style="font-size:16px">${t.flag}</span><span style="flex:1">${t.name}</span><span style="color:var(--info-text);font-size:11px;font-weight:500">${pts > 0 ? `+${pts}` : ''}</span></div>`;
+    }).join('');
+    grid.appendChild(card);
+  });
+}
+
+function renderTournament() {
+  const el = document.getElementById('tournament-content');
+  if (!el) return;
+  let html = '<div class="round-label">Group Stage — click +/- to add wins/draws</div><div class="matches-grid">';
+  for (const [groupName, teams] of Object.entries(GROUPS_2026)) {
+    html += '<div class="match-card"><div style="font-size:10px;color:var(--text3);margin-bottom:6px">Group ' + groupName + '</div>';
+    teams.forEach(teamName => {
+      const t = COUNTRIES.find(c => c.name === teamName);
+      if (!t) return;
+      const wins = getGroupWins(t.name);
+      const draws = getGroupDraws(t.name);
+      const groupPoints = (wins * 3) + draws;
+      html += `<div class="match-team-row">
+        <div style="display:flex;align-items:center;gap:8px;width:100%">
+          <span style="font-size:20px">${t.flag}</span>
+          <span style="font-size:13px;font-weight:500;flex:1">${t.name}</span>
+          <span class="mult-badge ${multClass(t.rank)}">${multLabel(t.rank)}</span>
+        </div>
+        <div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap;padding-left:28px">
+          <div style="display:flex;gap:4px;align-items:center;background:var(--bg2);padding:3px 8px;border-radius:20px">
+            <button class="kbtn" onclick="decrementGroupWin('${t.name.replace(/'/g, "\\'")}')" style="background:#4a4a4a;color:white;border:none;padding:2px 8px">-</button>
+            <span style="min-width:32px;text-align:center;font-weight:bold;font-size:12px">${wins}W</span>
+            <button class="kbtn" onclick="incrementGroupWin('${t.name.replace(/'/g, "\\'")}')" style="background:#4a4a4a;color:white;border:none;padding:2px 8px">+</button>
+          </div>
+          <div style="display:flex;gap:4px;align-items:center;background:var(--bg2);padding:3px 8px;border-radius:20px">
+            <button class="kbtn" onclick="decrementGroupDraw('${t.name.replace(/'/g, "\\'")}')" style="background:#4a4a4a;color:white;border:none;padding:2px 8px">-</button>
+            <span style="min-width:32px;text-align:center;font-weight:bold;font-size:12px">${draws}D</span>
+            <button class="kbtn" onclick="incrementGroupDraw('${t.name.replace(/'/g, "\\'")}')" style="background:#4a4a4a;color:white;border:none;padding:2px 8px">+</button>
+          </div>
+          <span style="background:var(--info-bg);color:var(--info-text);padding:3px 10px;border-radius:20px;font-size:12px;font-weight:bold">${groupPoints} pts</span>
+        </div>
+      </div>`;
+    });
+    html += '</div>';
+  }
+  html += '</div>';
+
+  KNOCKOUT_STAGES.forEach(function(stageDef) {
+    const key = stageDef.key;
+    const label = stageDef.label;
+    const cap = stageDef.cap;
+    const selected = stageCount(key);
+    const capFull = selected >= cap;
+
+    html += '<div class="round-label" style="display:flex;align-items:center;gap:8px">'
+      + '<span>' + label + '</span>'
+      + '<span style="font-size:11px;padding:2px 8px;border-radius:10px;font-weight:500;background:'
+      + (capFull ? 'var(--success-bg)' : 'var(--bg2)') + ';color:'
+      + (capFull ? 'var(--success-text)' : 'var(--text3)') + '">' + selected + '/' + cap + '</span>'
+      + '</div>'
+      + '<div class="matches-grid">';
+
+    COUNTRIES.forEach(function(c) {
+      const done = (state.countryStages[c.name] || []).includes(key);
+      const prevOk = !stageDef.prev || (state.countryStages[c.name] || []).includes(stageDef.prev);
+
+      let btnLabel, btnStyle, onclickVal;
+      if (done) {
+        btnLabel = '✓ done';
+        btnStyle = 'background:var(--success-bg);color:var(--success-text);border-color:var(--success-border)';
+        onclickVal = 'recordAdvance(\'' + c.name.replace(/'/g, "\\'") + '\', \'' + key + '\')';
+      } else if (!prevOk) {
+        btnLabel = 'n/a';
+        btnStyle = 'cursor:not-allowed;opacity:0.4;background:none;color:var(--text3)';
+        onclickVal = 'showToast(\'' + c.name.replace(/'/g, "\\'") + ' hasn\\\'t advanced from the previous round\')';
+      } else if (capFull) {
+        btnLabel = 'full';
+        btnStyle = 'cursor:not-allowed;opacity:0.4;background:none;color:var(--text3)';
+        onclickVal = 'showToast(\'Max ' + cap + ' teams for ' + label + '\')';
+      } else {
+        btnLabel = 'record';
+        btnStyle = '';
+        onclickVal = 'recordAdvance(\'' + c.name.replace(/'/g, "\\'") + '\', \'' + key + '\')';
+      }
+
+      html += '<div class="match-card" style="display:flex;align-items:center;gap:8px;padding:8px 12px;">'
+        + '<span style="font-size:18px">' + c.flag + '</span>'
+        + '<span style="flex:1;font-size:12px">' + c.name + '</span>'
+        + '<span class="mult-badge ' + multClass(c.rank) + '">' + multLabel(c.rank) + '</span>'
+        + '<button class="adv-btn ' + (done ? 'done' : '') + '" style="' + btnStyle + '" onclick="' + onclickVal + '">' + btnLabel + '</button>'
+        + '</div>';
+    });
+
+    html += '</div>';
+  });
+
+  el.innerHTML = html;
+}
+
+function renderLeaderboard() {
+  const el = document.getElementById('lb-content');
+  if (!el) return;
+  const scores = state.members.map((m, i) => ({name: m, score: calcMemberScore(m), color: COLORS[i]})).sort((a,b) => b.score - a.score);
+  const maxScore = Math.max(...scores.map(s => s.score), 1);
+  let html = '<table class="lb-table"><thead><tr><th></th><th>Member</th><th style="text-align:right">Points</th><th style="min-width:120px">Progress</th></tr></thead><tbody>';
+  scores.forEach((s, i) => {
+    const pct = Math.round((s.score / maxScore) * 100);
+    const medal = i === 0 ? '🥇' : i === 1 ? '🥈' : i === 2 ? '🥉' : String(i+1);
+    html += `<tr><td style="width:36px">${medal}</td><td><span style="display:inline-block;width:8px;height:8px;border-radius:50%;background:${s.color};margin-right:7px"></span>${s.name}</td><td style="text-align:right;font-weight:500">${s.score}</td><td><div class="bar-wrap"><div class="bar-fill" style="width:${pct}%;background:${s.color}"></div></div></td></tr>`;
+  });
+  html += '</tbody></table>';
+  el.innerHTML = html;
+}
   
 function recordAdvance(name, stage) {
   if (!state.countryStages[name]) state.countryStages[name] = [];
