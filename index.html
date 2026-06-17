@@ -343,6 +343,13 @@ function isPoolLocked() { return new Date() >= LOCK_DATE; }
 
 let ignoreNextRemote = false, saveTimer = null;
 
+firebase.auth().signInAnonymously().catch(e => console.error(e));
+firebase.auth().onAuthStateChanged(user => {
+  if (user) {
+    // now safe to attach poolRef listeners
+  }
+});
+  
 // Firebase sync
 if (poolRef) {
   poolRef.on('value', snapshot => {
